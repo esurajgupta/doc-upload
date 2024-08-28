@@ -22,3 +22,13 @@ export const getWorkflowList = async (callback) => {
         callback(err)
     })
 };
+
+export const createNewTask = async (payload,callback) => {
+    await httpClient.post(endpoints.createTaskURL,payload).then((res) => {
+        console.log(res);
+        callback (res.data)
+        }).catch((err) => {
+        console.log(err,"error");
+        callback(err)
+    })
+};

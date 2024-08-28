@@ -29,18 +29,15 @@ export default {
             type: Array
         }
     },
+    emits: ["removeSelectedDoc"],
     data() {
         return {
-            documentList: ref([{ filename: "test fileName1" }, { filename: "test fileName 2" }, { filename: "test fileName3" }, { filename: "test fileName 4" }]),
             imag: img
         }
     },
     methods: {
         removeDocument(docId) {
-            const val = this.documentList
-            val.splice(docId, 1);
-            console.log(docId);
-
+            this.$emit("removeSelectedDoc", docId);
         },
         stringShortner(str) {
             if (str && str.length > 34) {

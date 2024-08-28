@@ -14,5 +14,17 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    proxy: {
+      "^/api/": {
+        target: "http://192.168.0.126:8087",
+        pathReWrite: { '^/api': '/api' }
+      },
+      "^/alfresco/": {
+        target: "http://127.0.0.1:8080",
+        pathReWrite: { '^/alfresco': '/alfresco' }
+      }
+    }
   }
 })

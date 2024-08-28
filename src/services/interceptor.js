@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 let config = {
-    baseURL: "http://192.168.0.126:8087"
+    headers: {
+        'Content-Type': 'application/json'
+    }
 };
 
 const httpClient = axios.create(config);

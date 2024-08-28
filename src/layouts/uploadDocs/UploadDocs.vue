@@ -12,10 +12,11 @@
                 <div class="col-span-6">
                     <p class="text-md font-medium text-slate-700">Collected Files</p>
                     <div class="min-h-10 max-h-50 w-100 overflow-x-auto mt-2">
-                        <DocumentList :docList="docList" />
+                        <DocumentList :docList="docList" @removeSelectedDoc="(val) => removeSelectedDocument(val)" />
                     </div>
                     <div class="flex flex-col gap-2 mt-2">
-                        <Button class="btn-color rounded-none" label="Upload" />
+                        <Button class="btn-color rounded-none" label="Upload" :disabled="!this.docList.length"
+                            @click="onClickUpload()" />
                     </div>
                 </div>
             </div>
@@ -27,6 +28,10 @@
 import FileUpload from '@/components/customFileUpload/FileUpload.vue';
 import DocumentList from './components/DocumentList.vue';
 import { ref } from 'vue';
+import { onMounted } from 'vue';
+import { getTokenForUser, uploadDocuments } from '@/services/upload-document';
+import { constant } from '@/constants/constants';
+import { parserXML } from '@/constants/functions';
 
 export default {
     name: "UploadDocs",
@@ -37,6 +42,7 @@ export default {
     data() {
         return {
             docList: ref([]),
+            userToken: ""
         }
     },
     methods: {
@@ -44,8 +50,54 @@ export default {
             console.log(value, "testing");
 
             const val = this.docList
-            val.push(value);
+            if (val.length > 0) {
+                val.splice(0, 1, value);
+            } else {
+                val.push(value);
+            }
+            console.log(this.docList, "tsetin main arr");
+
+        },
+        removeSelectedDocument(id) {
+            console.log(id, "checking id");
+
+            const arr = this.docList;
+            arr.splice(id, 1);
+            console.log(arr, "checking temp arr");
+            console.log(this.docList, "checking doclist");
+
+
+        },
+        async generateToken() {
+            const searchParams = new URLSearchParams(window.location.search);
+            const userName = searchParams.get("user");
+            await getTokenForUser({
+                userName,
+                password: constant.commonUserPass
+            }, (res) => {
+                this.userToken = parserXML(res);
+
+            })
+        },
+        async onClickUpload() {
+            const payload = new FormData;
+            payload.append("fileData", this.docList[0]);
+            payload.append("name", this.docList[0]?.name);
+            payload.append("nodeType", "cm:content");
+
+            await uploadDocuments({
+                alf_ticket: this.userToken
+            }, payload, (res) => {
+                console.log(res);
+            });
         }
+    },
+    mounted() {
+        this.generateToken();
+    },
+    updated() {
+        console.log(this.docList, "testst");
+
     }
 }
 </script>
@@ -56,7 +108,7 @@ export default {
 }
 
 .btn-color {
-    background-color: #b1d1f6;
+    background-color: #5D9FEC;
     color: #fff;
     font-weight: 500;
     font-size: small;
