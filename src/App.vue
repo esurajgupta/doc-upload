@@ -11,6 +11,7 @@ import Menubar from "@/components/menuBar/MenuBar.vue"
         <Menubar />
       </div>
       <div class=""> -->
+  <Toast />
   <RouterView />
   <!-- </div>
     </div> -->

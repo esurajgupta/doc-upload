@@ -42,22 +42,12 @@
 </template>
 <script>
 import { createNewTask, getUserList, getWorkflowList } from "@/services/task-creation";
-import { ref } from "vue";
-
-const cities = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-]);
-
 export default {
     data() {
         return {
             selectedUser: null,
             selectedWorkflow: null,
-            description: "gojy",
+            description: "",
             userList: [],
             workflowList: [],
         }
@@ -82,7 +72,7 @@ export default {
             };
 
             await createNewTask(payload, (res) => {
-                console.log(res, "created successfully");
+                this.$toast.add({ severity: 'success', detail: 'Task Created Successfully', life: 3000 })
                 this.description = "";
                 this.selectedUser = null;
                 this.selectedWorkflow = null;

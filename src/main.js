@@ -19,18 +19,22 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputIcon from 'primevue/inputicon';
 import IconField from 'primevue/iconfield';
-import Tag from 'primevue/tag'
-import Dialog from 'primevue/dialog'
+import Tag from 'primevue/tag';
+import Dialog from 'primevue/dialog';
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 const app = createApp(App)
 
-app.use(PrimeVue, { ripple: true,unstyled: true, options: {
-    cssLayer: {
-        name: 'primevue',
-        order: 'tailwind-base, primevue, tailwind-utilities'
-    }
-},pt:Lara });
-app.use(router)
-
+app.use(PrimeVue, {
+    ripple: true, unstyled: true, options: {
+        cssLayer: {
+            name: 'primevue',
+            order: 'tailwind-base, primevue, tailwind-utilities'
+        }
+    }, pt: Lara
+});
+app.use(router);
+app.use(ToastService);
 app.mount('#app');
 app.component('Button', Button);
 app.component('FileUpload', FileUpload);
@@ -47,3 +51,4 @@ app.component('InputIcon', InputIcon);
 app.component('IconField', IconField);
 app.component('Tag', Tag);
 app.component('Dialog', Dialog);
+app.component('Toast', Toast);

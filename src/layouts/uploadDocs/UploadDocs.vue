@@ -22,13 +22,13 @@
             </div>
         </div>
     </div>
+    <!-- <Toast /> -->
 </template>
 
 <script>
 import FileUpload from '@/components/customFileUpload/FileUpload.vue';
 import DocumentList from './components/DocumentList.vue';
 import { ref } from 'vue';
-import { onMounted } from 'vue';
 import { getTokenForUser, uploadDocuments } from '@/services/upload-document';
 import { constant } from '@/constants/constants';
 import { parserXML } from '@/constants/functions';
@@ -89,6 +89,7 @@ export default {
                 alf_ticket: this.userToken
             }, payload, (res) => {
                 console.log(res);
+                return this.$toast.add({ severity: 'success', detail: 'Uploaded Successfully', life: 3000 });
             });
         }
     },
