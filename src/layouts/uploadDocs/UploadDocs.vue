@@ -129,8 +129,9 @@ export default {
                     })
 
                     const docsInfoPayload = {
-                        "taskId": this.searchParams.get("taskId"),
-                        "alferscoId": res?.entry?.id,
+                        "taskId": parseInt(this.searchParams.get("taskId")),
+                        "alferscoId": parseInt(res?.entry?.id),
+                        userName: this.searchParams.get("user"),
                         "documents": [
                             {
                                 "uplodedDocumentId": docDetails?.entry?.id,
@@ -139,7 +140,7 @@ export default {
                         ]
                     };
                     await uploadDocsInfoToDB(docsInfoPayload, (res) => {
-                        router.push("/tasklist");
+                        setTimeout(() => router.push("/tasklist"), 1000);
                     });
                 }
             });
@@ -150,7 +151,6 @@ export default {
     },
     updated() {
         console.log(this.docList, "testst");
-
     }
 }
 </script>

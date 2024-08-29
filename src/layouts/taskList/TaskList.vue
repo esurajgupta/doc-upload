@@ -1,5 +1,11 @@
 <template>
-    <div class="bgBlue h-screen w-screen flex justify-center items-center">
+    <div class="card flex justify-center absolute z-10 w-full h-full  items-center hidden">
+        <ProgressSpinner fill="transparent" animationDuration=".5s" aria-label="Custom ProgressSpinner" />
+    </div>
+    <div class="bgBlue h-full w-full flex  flex-col relative ">
+        <div class="flex justify-end m-2">
+            <Button label="Create Task" severity="info" outlined />
+        </div>
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl" style="width:-webkit-fill-available;">
             <div class="flex">
                 <div class="grid grid-cols-12 gap-2 w-full">
@@ -30,10 +36,11 @@
                 </ul>
 
             </div>
+
             <DataTable :value="tasks" stripedRows tableStyle="min-width: 50rem">
                 <Column field="entry.name" header="Task Name"></Column>
                 <Column field="entry.description" header="Task Description"></Column>
-                <Column field="entry.activityDefinitionId" header="status"></Column>
+                <Column field="entry.activityDefinitionId" header="Status"></Column>
                 <Column field="entry.assignee" header="Assignee">
                     <!-- <template #body="{ data }">
                         <Tag :value="data.status.status" :severity="getSeverity(data.status.status)"
@@ -44,7 +51,7 @@
                     <template #body="{ data }" class="">
                         <!-- <IconField> -->
                         <div class="h-full w-full flex justify-start items-center pl-4">
-                            <span class="pi pi-eye" @click="changeModalVisibilty(data?.entry?.id)"></span>
+                            <span class="pi pi-eye" @click="changeModalVisibilty(data?.entry?.processId)"></span>
                         </div>
                         <!-- </IconField> -->
                     </template>
@@ -72,12 +79,15 @@
             </div>
         </div>
     </Dialog>
+    <!-- <ProgressSpinner /> -->
     <Toast />
 </template>
 
 <script>
+import { findUserFolderId, findUserId, sortTaskRelatedDocs } from '@/constants/functions';
 import endpoints from '@/services/endpoints';
 import { httpClient } from '@/services/interceptor';
+import { fetchTaskDocuments } from '@/services/task-creation';
 import { approveDocument, getAlfrescoTaskList } from '@/services/task-list';
 import { ref } from 'vue';
 
@@ -159,6 +169,7 @@ export default {
             console.log(taskId);
             this.selectedTask = taskId;
             this.visible = !this.visible;
+            this.getFiles(taskId);
         },
         async getTaskList() {
             const response = await httpClient.get(endpoints.getTasklistURL);
@@ -171,9 +182,32 @@ export default {
 
             });
         },
-        async getFiles(userToken) {
-            const response = await httpClient.get(`${endpoints.getDocuments}&alf_ticket=${userToken}`)
-            console.log(response);
+        async getFiles(taskId) {
+
+            await fetchTaskDocuments(taskId, (res) => {
+                // const finalArr = sortTaskRelatedDocs(docsList, res);
+                this.documents = res;
+            });
+            const docsList = await httpClient.get(`${endpoints.getDocuments}`, {
+                auth: {
+                    username: "admin",
+                    password: "admin"
+                }
+            });
+            const folderList = await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/` + findUserFolderId(docsList?.data?.list?.entries) + "/children", {
+                auth: {
+                    username: "admin",
+                    password: "admin"
+                }
+            });
+            const userDocList = await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/` + findUserId(folderList?.data?.list?.entries, this.documents[0].split(",").pop()) + "/children", {
+                auth: {
+                    username: "admin",
+                    password: "admin"
+                }
+            });
+            console.log(userDocList, "test");
+
         }
     },
     mounted() {
@@ -193,9 +227,6 @@ a {
     color: hsla(160, 100%, 37%, 1) !important;
 }
 
-.bgBlue {
-    background-color: #d3e4f8;
-}
 
 .pi-search {
     color: #808080;

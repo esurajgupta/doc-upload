@@ -26,7 +26,9 @@ import ToastService from 'primevue/toastservice';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
-
+import ProgressSpinner from 'primevue/progressspinner';
+import Breadcrumbs from 'primevue/breadcrumb';
+import ThemeSwitcher from './components/ThemeSwitcher.vue'
 const app = createApp(App)
 
 app.use(PrimeVue, {
@@ -59,3 +61,6 @@ app.component('Toast', Toast);
 app.component('Tabs', Tabs);
 app.component('TabList', TabList);
 app.component('Tab', Tab);
+app.component('ProgressSpinner', ProgressSpinner);
+app.component('Breadcrumbs', Breadcrumbs);
+app.component('ThemeSwitcher', ThemeSwitcher);

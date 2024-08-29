@@ -8,12 +8,13 @@ const endpoints = {
         getTasklistURL: "/api/v1/fetchTask",
         uploadDocuments: "/alfresco/api/-default-/public/alfresco/versions/1/nodes/-my-/children",
         getTokenForSpecifiedUser: "/alfresco/s/api/login",
-        getDocuments: "/alfresco/api/-default-/public/alfresco/versions/1/nodes/-my-/children?maxItems=5",
+        getDocuments: "/alfresco/api/-default-/public/alfresco/versions/1/nodes/-my-/children",
         createProcessInstance: "/alfresco/api/-default-/public/workflow/versions/1/processes",
         aassignDocToProcess: "/alfresco/api/-default-/public/workflow/versions/1/processes/",
         getAlfrescoTaskListURL: "/alfresco/api/-default-/public/workflow/versions/1/tasks",
         documentApproveURL: "/alfresco/api/-default-/public/workflow/versions/1/tasks/",
-        uploadDocumentDetails: "/api/v1/uploadDocument"
+        uploadDocumentDetails: "/api/v1/uploadDocument",
+        fetchDocsLinkedWithTask: "/api/v1/fetchDocument/"
 };
 
 export default endpoints;
