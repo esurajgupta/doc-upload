@@ -1,5 +1,5 @@
 <template>
-    <div class="bgBlue h-screen w-screen flex justify-center items-center">
+    <div class="bgBlue h-full w-full flex justify-center ">
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
             <div class="w-100">
                 <p class="text-xl text-gray-500 pb-1 font-semibold">Upload your Documents </p>
@@ -156,10 +156,6 @@ export default {
 </script>
 
 <style scoped>
-.bgBlue {
-    background-color: #d3e4f8;
-}
-
 .btn-color {
     background-color: #5D9FEC;
     color: #fff;

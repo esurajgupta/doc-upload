@@ -4,7 +4,8 @@
     </div>
     <div class="bgBlue h-full w-full flex  flex-col relative ">
         <div class="flex justify-end m-2">
-            <Button label="Create Task" severity="info" outlined />
+            <Button label="Create Task" severity="info" outlined
+                @click="this.$router.push('/translanding/createTask')" />
         </div>
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl" style="width:-webkit-fill-available;">
             <div class="flex">

@@ -86,9 +86,9 @@ export default {
     methods: {
         menuListItem() {
             const menuList = [
+                { "menuUrl": "/translanding/workflowList", "menuIcon": "quotation", "menuName": "Workflow", "parentmenuid": null, "isActive": false, "children": [] },
                 { "menuUrl": "/translanding/taskList", "menuIcon": "network", "menuName": "Tasks", "parentmenuid": null, "isActive": false, "children": [] },
-                { "menuUrl": "/translanding/metadata", "menuIcon": "quotation", "menuName": "Update Metadata", "parentmenuid": null, "isActive": false, "children": [] },
-                { "menuUrl": "/translanding/user", "menuIcon": "user", "menuName": "User", "parentmenuid": null, "isActive": false, "children": [] },
+                // { "menuUrl": "/translanding/user", "menuIcon": "user", "menuName": "User", "parentmenuid": null, "isActive": false, "children": [] },
             ]
             this.menus = menuList
         },

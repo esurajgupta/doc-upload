@@ -71,9 +71,12 @@
         </div>
 
     </div>
+    <Toast />
 </template>
 
 <script>
+import { constant } from '@/constants/constants';
+
 export default {
     data() {
         return {
@@ -89,11 +92,12 @@ export default {
         },
         load() {
             this.loading = true;
-            if (this.email && this.password) {
-                let payload = {
-                    email: this.email,
-                    password: this.password,
-                };
+            if (this.email && this.password === constant.commonUserPass) {
+                if (this.email === constant.adminUserName) {
+                    localStorage.setItem("role", "admin");
+                } else {
+                    localStorage.setItem("role", "user");
+                }
                 this.$router.push("/translanding");
                 // axios.post("/user/loginAPI", payload, {})
                 //   .then((res) => {
@@ -105,6 +109,8 @@ export default {
                 //   .catch((err) => {
                 //     console.log(err.message);
                 //   });
+            } else {
+                this.$toast.add({ severity: "error", detail: "Invalid Credentials", life: 2000 });
             }
         }
     },

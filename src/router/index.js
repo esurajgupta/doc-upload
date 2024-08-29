@@ -4,6 +4,7 @@ import UploadDocs from '@/layouts/uploadDocs/UploadDocs.vue'
 import TaskCreation from '@/layouts/taskCreation/TaskCreation.vue'
 import Landing from '@/components/landing/Landing.vue'
 import TaskList from '@/layouts/taskList/TaskList.vue'
+import WorkflowList from '@/layouts/workflow/WorkflowList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,15 +13,15 @@ const router = createRouter({
       path: '/translanding', component: Landing,
       children: [
         {
-          path: 'createTask',
-          name: 'createTask',
+          path: 'createWorkflow',
+          name: 'createWorkflow',
           component: TaskCreation,
           meta: {
             breadcrumb: [{
-              label: "CreateTask"
+              label: "CreateWorkflow"
             }, {
-              label: "CreateTask",
-              route: "/translanding/createTask"
+              label: "CreateWorkflow",
+              route: "/translanding/createWorkflow"
             }]
           }
         },
@@ -43,14 +44,27 @@ const router = createRouter({
           component: TaskList,
           meta: {
             breadcrumb: [{
-              label: "taskList"
+              label: "TaskList"
             }, {
-              label: "taskList",
+              label: "TaskList",
               route: "/translanding/taskList"
             }]
           }
         },
-        { path: "", redirect: '/translanding/taskList' }
+        {
+          path: 'workflowlist',
+          name: 'workflowlist',
+          component: WorkflowList,
+          meta: {
+            breadcrumb: [{
+              label: "WorkflowList"
+            }, {
+              label: "WorkflowList",
+              route: "/translanding/workflowList"
+            }]
+          }
+        },
+        { path: "", redirect: '/translanding/workflowList' }
       ]
     },
     {

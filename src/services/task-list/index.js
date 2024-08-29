@@ -26,3 +26,11 @@ export const approveDocument = async (payload, callback) => {
         callback(err);
     })
 };
+
+export const fetchDBTaskList = async (callback) => {
+    await httpClient.get(endpoints.getTasklistURL).then((res) => {
+        callback(res.data);
+    }).catch((err) => {
+        callback(err);
+    })
+};

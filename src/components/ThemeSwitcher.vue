@@ -56,7 +56,7 @@ export default {
                     icon: 'pi pi-sign-out',
                     command: () => {
                         localStorage.clear();
-                        this.$router.push('/auth');
+                        this.$router.push('/login');
                     }
                 }
             ],
@@ -79,7 +79,7 @@ export default {
         },
         logout() {
             localStorage.clear();
-            this.$router.push('/auth');
+            this.$router.push('/login');
         }
     },
     computed: {
