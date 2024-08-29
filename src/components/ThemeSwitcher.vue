@@ -21,22 +21,9 @@
                 </div>
             </div>
         </div>
-        <ul class="flex list-none m-0 p-0 gap-2 items-center">
-            <li>
-                <div class="flex gap-1 py-1 px-2 items-center justify-center surface-0 dark:surface-800 border border-surface-200 dark:border-surface-600 rounded cursor-pointer"
-                    @click="logout">
-                    <i class="pi pi-sign-out" />
-                    <div>Logout</div>
-                </div>
-            </li>
-            <li>
-                <button type="button"
-                    class="inline-flex border w-8 h-8 p-0 items-center justify-center surface-0 dark:surface-800 border border-surface-200 dark:border-surface-600 rounded"
-                    @click="onThemeToggler">
-                    <i :class="`dark:text-white pi ${iconClass}`" />
-                </button>
-            </li>
-        </ul>
+        <div>
+                <Button size="small" @click="logout" label="Logout" icon="pi pi-signt" />
+        </div>
     </div>
 </template>
 
