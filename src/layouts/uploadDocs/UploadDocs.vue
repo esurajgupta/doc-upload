@@ -71,7 +71,7 @@ export default {
 
         },
         async generateToken() {
-            const userName = searchParams.get("user");
+            const userName = this.searchParams.get("user");
             await getTokenForUser({
                 userName,
                 password: constant.commonUserPass
