@@ -1,5 +1,5 @@
 <template>
-    <div class="container bgBlue h-screen w-screen flex justify-center items-center">
+    <div class="bgBlue h-screen w-screen flex justify-center items-center">
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
             <div class="w-100">
                 <p class="text-xl text-gray-500 pb-1 font-semibold">Upload your Documents </p>
@@ -22,16 +22,17 @@
             </div>
         </div>
     </div>
-    <!-- <Toast /> -->
+    <Toast />
 </template>
 
 <script>
 import FileUpload from '@/components/customFileUpload/FileUpload.vue';
 import DocumentList from './components/DocumentList.vue';
 import { ref } from 'vue';
-import { getTokenForUser, uploadDocuments } from '@/services/upload-document';
+import { assignDocToProcess, createNewProcess, getTokenForUser, uploadDocsInfoToDB, uploadDocuments } from '@/services/upload-document';
 import { constant } from '@/constants/constants';
 import { parserXML } from '@/constants/functions';
+import router from '@/router';
 
 export default {
     name: "UploadDocs",
@@ -42,7 +43,8 @@ export default {
     data() {
         return {
             docList: ref([]),
-            userToken: ""
+            userToken: "",
+            searchParams: new URLSearchParams(window.location.search)
         }
     },
     methods: {
@@ -69,7 +71,6 @@ export default {
 
         },
         async generateToken() {
-            const searchParams = new URLSearchParams(window.location.search);
             const userName = searchParams.get("user");
             await getTokenForUser({
                 userName,
@@ -89,7 +90,58 @@ export default {
                 alf_ticket: this.userToken
             }, payload, (res) => {
                 console.log(res);
-                return this.$toast.add({ severity: 'success', detail: 'Uploaded Successfully', life: 3000 });
+                console.log(res?.data?.error?.briefSummary);
+
+                if (res && res?.status && res.status !== 201) {
+                    console.log("work");
+
+                    this.$toast.add({ severity: 'error', detail: "error occured", life: 3000 });
+                    return
+                }
+                this.$toast.add({ severity: 'success', detail: 'Uploaded Successfully', life: 3000 });
+                this.startProcess(res?.data);
+            });
+        },
+        async startProcess(docDetails) {
+            const payload = {
+                "processDefinitionKey": "activitiReview",
+                "variables":
+                {
+                    "bpm_assignee": "admin"
+                }
+            };
+            await createNewProcess(payload, async (res) => {
+                if (JSON.stringify(res).includes("AxiosError")) {
+                    this.$toast.add({ severity: 'danger', detail: 'Error occurred while initiating workflow', life: 3000 });
+                } else {
+                    this.$toast.add({ severity: 'success', detail: 'WorkFlow initiated sucessfully', life: 3000 });
+
+                    const tempPayload = {
+                        taskId: res?.entry?.id,
+                        id: `workspace://SpacesStore/${docDetails?.entry?.id}`
+                    }
+                    await assignDocToProcess(tempPayload, (res) => {
+                        if (JSON.stringify(res).includes("AxiosError")) {
+                            this.$toast.add({ severity: 'danger', detail: 'Error occurred while adding document', life: 3000 });
+                        } else {
+                            this.$toast.add({ severity: 'success', detail: 'Workflow updated successfully', life: 3000 });
+                        }
+                    })
+
+                    const docsInfoPayload = {
+                        "taskId": this.searchParams.get("taskId"),
+                        "alferscoId": res?.entry?.id,
+                        "documents": [
+                            {
+                                "uplodedDocumentId": docDetails?.entry?.id,
+                                "documentName": docDetails?.entry?.name
+                            },
+                        ]
+                    };
+                    await uploadDocsInfoToDB(docsInfoPayload, (res) => {
+                        router.push("/tasklist");
+                    });
+                }
             });
         }
     },

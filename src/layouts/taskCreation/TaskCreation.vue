@@ -1,5 +1,5 @@
 <template>
-    <div class="container bgBlue h-screen w-screen flex justify-center items-center">
+    <div class="bgBlue h-screen w-screen flex justify-center items-center">
         <div class="bg-white p-4 px-3 m-2 h-fit rounded shadow-3xl">
             <div class="">
                 <p class="text-xl text-slate-400">Task Creation </p>

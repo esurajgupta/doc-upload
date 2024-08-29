@@ -23,6 +23,10 @@ import Tag from 'primevue/tag';
 import Dialog from 'primevue/dialog';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import Tabs from 'primevue/tabs';
+import TabList from 'primevue/tablist';
+import Tab from 'primevue/tab';
+
 const app = createApp(App)
 
 app.use(PrimeVue, {
@@ -52,3 +56,6 @@ app.component('IconField', IconField);
 app.component('Tag', Tag);
 app.component('Dialog', Dialog);
 app.component('Toast', Toast);
+app.component('Tabs', Tabs);
+app.component('TabList', TabList);
+app.component('Tab', Tab);

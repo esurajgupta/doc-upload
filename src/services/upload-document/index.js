@@ -23,7 +23,44 @@ export const uploadDocuments = async (params = {}, payload, callback) => {
             'Content-Type': 'multipart/form-data'
         }
     }).then((response) => {
-        callback(response.data);
+        callback(response);
+    }).catch((err) => {
+        callback(err);
+    })
+}
+
+export const createNewProcess = async (payload, callback) => {
+    await httpClient.post(endpoints.createProcessInstance, payload, {
+        auth: {
+            username: 'admin',
+            password: 'admin'
+        }
+    }).then((res) => {
+        callback(res.data);
+    }).catch((err) => {
+        callback(err);
+    })
+}
+
+export const assignDocToProcess = async (payload, callback) => {
+    await httpClient.post(endpoints.aassignDocToProcess + `${payload.taskId}/items`, {
+        id: payload.id
+    }, {
+        auth: {
+            username: 'admin',
+            password: 'admin'
+        }
+    }).then((res) => {
+        callback(res.data);
+    }).catch((err) => {
+        callback(err);
+    })
+};
+
+
+export const uploadDocsInfoToDB = async (payload, callback) => {
+    await httpClient.post(endpoints.uploadDocumentDetails, payload).then((res) => {
+        callback(res.data);
     }).catch((err) => {
         callback(err);
     })

@@ -1,6 +1,6 @@
 <template>
-    <div class="container bgBlue h-screen w-screen flex justify-center items-center">
-        <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
+    <div class="bgBlue h-screen w-screen flex justify-center items-center">
+        <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl" style="width:-webkit-fill-available;">
             <div class="flex">
                 <div class="grid grid-cols-12 gap-2 w-full">
                     <div class="col-span-6 flex items-center">
@@ -14,21 +14,37 @@
                     </div>
                 </div>
             </div>
-            <DataTable :value="products" stripedRows tableStyle="min-width: 50rem">
-                <Column field="code" header="Workflow"></Column>
-                <Column field="name" header="User"></Column>
-                <Column field="category" header="Description"></Column>
-                <Column field="quantity" header="Status">
-                    <template #body="{ data }">
-                        <Tag :value="data.inventoryStatus" :severity="getSeverity(data.inventoryStatus)"
+            <div>
+                <ul
+                    class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                    <li class="me-2" @click="this.onClickTab(0)">
+                        <a href="#" aria-current="page"
+                            class="inline-block p-4 text-blue-600  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                            :class="[this.tabvalue === 0 ? 'active bg-gray-100  textBlue' : '']">Active</a>
+                    </li>
+                    <li class="me-2" @click="this.onClickTab(1)">
+                        <a href="#"
+                            class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                            :class="[this.tabvalue === 1 ? 'active bg-gray-100  textBlue' : '']">Completed</a>
+                    </li>
+                </ul>
+
+            </div>
+            <DataTable :value="tasks" stripedRows tableStyle="min-width: 50rem">
+                <Column field="entry.name" header="Task Name"></Column>
+                <Column field="entry.description" header="Task Description"></Column>
+                <Column field="entry.activityDefinitionId" header="status"></Column>
+                <Column field="entry.assignee" header="Assignee">
+                    <!-- <template #body="{ data }">
+                        <Tag :value="data.status.status" :severity="getSeverity(data.status.status)"
                             class="text-md font-medium" style="color: white" />
-                    </template>
+                    </template> -->
                 </Column>
                 <Column field="action" header="Action" dataType="boolean">
                     <template #body="{ data }" class="">
                         <!-- <IconField> -->
                         <div class="h-full w-full flex justify-start items-center pl-4">
-                            <span class="pi pi-eye" @click="changeModalVisibilty()"></span>
+                            <span class="pi pi-eye" @click="changeModalVisibilty(data?.entry?.id)"></span>
                         </div>
                         <!-- </IconField> -->
                     </template>
@@ -47,7 +63,8 @@
             </div>
             <div class="flex gap-2 justify-end mt-3">
                 <div>
-                    <Button label="Reject" severity="danger" size="small" style="font-size: small;" />
+                    <Button label="Reject" severity="danger" size="small" style="font-size: small;"
+                        @click="this.onClickReject()" />
                 </div>
                 <div>
                     <Button label="Approve" severity="success" size="small" style="font-size: small;" />
@@ -55,9 +72,13 @@
             </div>
         </div>
     </Dialog>
+    <Toast />
 </template>
 
 <script>
+import endpoints from '@/services/endpoints';
+import { httpClient } from '@/services/interceptor';
+import { approveDocument, getAlfrescoTaskList } from '@/services/task-list';
 import { ref } from 'vue';
 
 export default {
@@ -65,67 +86,113 @@ export default {
     components: {},
     data() {
         return {
+            userToken: "",
             visible: false,
+            selectedTask: null,
+            tabvalue: 0,
             documents: [{ file: "test file" }, { file: "test file4" }, { file: "test file2" }, { file: "test file3" }],
-            products: ref([
-                {
-                    id: '1000',
-                    code: 'f230fh0g3',
-                    name: 'Bamboo Watch',
-                    description: 'Product Description',
-                    image: 'bamboo-watch.jpg',
-                    price: 65,
-                    category: 'Accessories',
-                    quantity: 24,
-                    inventoryStatus: 'OUT OF STOCK',
-                    rating: 5,
-                    action: false
-                },
-                {
-                    id: '1000',
-                    code: 'f230fh0g3',
-                    name: 'Bamboo Watch',
-                    description: 'Product Description',
-                    image: 'bamboo-watch.jpg',
-                    price: 65,
-                    category: 'Accessories',
-                    quantity: 24,
-                    inventoryStatus: 'INSTOCK',
-                    rating: 5,
-                    action: true
-                }
-            ]),
-
+            tasks: ref([]),
         }
     },
     methods: {
+        onClickTab(val) {
+            console.log("method worinf");
+
+            this.tabvalue = val;
+        },
         getSeverity(status) {
             switch (status) {
-                case 'INSTOCK':
+                case 'Cancelled':
                     return 'danger';
 
-                case 'OUT OF STOCK':
+                case 'Completed':
                     return 'success';
 
-                case 'new':
+                case 'In progress':
                     return 'info';
 
-                case 'negotiation':
+                case 'On hold':
                     return 'warn';
 
-                case 'renewal':
+                case 'Not yet started':
                     return null;
             }
         },
-        changeModalVisibilty() {
+        async onClickReject() {
+            const payload = {
+                payload: {
+                    "state": "completed",
+                    "variables": [
+                        {
+                            "name": "bpm_priority",
+                            "type": "d_int",
+                            "value": 1,
+                            "scope": "global"
+                        }
+                    ]
+                },
+                taskId: this.selectedTask
+            };
+            await approveDocument(payload, (res) => {
+                this.visible = !this.visible;
+                if (res && res?.status && res.status === 200) {
+                    this.$toast.add({ severity: 'success', detail: "Task rejected successfully ", life: 3000 });
+                } else {
+                    this.$toast.add({ severity: 'error', detail: "error occured", life: 3000 });
+                }
+
+                console.log(res);
+
+            })
+        },
+        // async changeModalVisibilty(userName) {
+        //     await getTokenForUser({
+        //         userName,
+        //         password: constant.commonUserPass
+        //     }, (res) => {
+        //         this.userToken = parserXML(res);
+        //         this.getFiles(this.userToken)
+        //     })
+        //     this.visible = !this.visible;
+        // },
+        async changeModalVisibilty(taskId) {
+            console.log(taskId);
+            this.selectedTask = taskId;
             this.visible = !this.visible;
+        },
+        async getTaskList() {
+            const response = await httpClient.get(endpoints.getTasklistURL);
+            this.tasks = response.data
+        },
+        async getAlfrescoTask() {
+            await getAlfrescoTaskList((res) => {
+                this.tasks = res?.list?.entries;
+                console.log(res, "ffofofo");
+
+            });
+        },
+        async getFiles(userToken) {
+            const response = await httpClient.get(`${endpoints.getDocuments}&alf_ticket=${userToken}`)
+            console.log(response);
         }
+    },
+    mounted() {
+        // this.getTaskList();
+        this.getAlfrescoTask();
     }
 }
 
 </script>
 
 <style scoped>
+a {
+    color: inherit;
+}
+
+.textBlue {
+    color: hsla(160, 100%, 37%, 1) !important;
+}
+
 .bgBlue {
     background-color: #d3e4f8;
 }
