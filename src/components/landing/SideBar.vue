@@ -4,7 +4,7 @@
             <img src="/src/assets/TA-DocuFlowLogo.jpg" class="w-10 h-10 rounded-full">
             <span class="inline-flex items-center gap-2 justify-center w-full py-3">
                 <span class="font-semibold text-2xl" style="font-size: 1.3rem; letter-spacing: -0.5px">TA -
-                    DocuFlow</span>
+                    Docuflow</span>
             </span>
         </div>
         <hr class="mt-2 mb-1" />

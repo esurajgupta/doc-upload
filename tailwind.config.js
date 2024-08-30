@@ -8,6 +8,11 @@ export default {
         '3xl': '-11px 33px 35px -3px rgba(0,0,0,0.2)',
       }
     },
+    fontFamily:{
+      sans:['SUSE'],
+      serif:['SUSE'],
+      mono:['SUSE']
+    },
   },
   plugins: [],
 }

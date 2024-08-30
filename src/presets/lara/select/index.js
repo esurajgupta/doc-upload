@@ -106,7 +106,7 @@ export default {
             'shadow-md',
 
             // Color
-            'bg-surface-0 dark:bg-surface-800',
+            'bg-sky-50 dark:bg-surface-800', // changes in global select
             'text-surface-800 dark:text-white/80',
             'dark:border-surface-700'
         ]
@@ -135,7 +135,7 @@ export default {
 
             // Shape
             'border-0',
-            'rounded-none',
+            'rounded-md', // changes in global select
 
             // Spacing
             'm-0',
@@ -144,7 +144,7 @@ export default {
             // Colors
             {
                 'text-surface-700 dark:text-white/80': !context.focused && !context.selected,
-                'bg-surface-200 dark:bg-surface-600/60': context.focused && !context.selected,
+                'bg-sky-300 dark:bg-surface-600/60': context.focused && !context.selected, // changes in global select
                 'text-surface-700 dark:text-white/80': context.focused && !context.selected,
                 'bg-highlight': context.selected
             },

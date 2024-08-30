@@ -21,7 +21,7 @@ const router = createRouter({
             breadcrumb: [{
               label: "CreateWorkflow"
             }, {
-              label: "CreateWorkflow",
+              label: "Create Workflow",
               route: "/translanding/createWorkflow"
             }]
           }

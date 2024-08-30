@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-span-6">
                     <div class="flex flex-col gap-2 mt-2">
-                        <label for="username">user</label>
+                        <label for="username">User</label>
                         <Select v-model="this.selectedUser" :options="this.userList" optionLabel="userName"
                             placeholder="Select a user" checkmark :highlightOnSelect="false" class="w-full md:w-56" />
                     </div>

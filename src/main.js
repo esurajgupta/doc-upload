@@ -6,6 +6,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config';
+import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import Panel from 'primevue/panel';
@@ -42,6 +43,7 @@ app.use(PrimeVue, {
 app.use(router);
 app.use(ToastService);
 app.mount('#app');
+app.component('AutoComplete',AutoComplete);
 app.component('Button', Button);
 app.component('FileUpload', FileUpload);
 app.component('Panel', Panel);
