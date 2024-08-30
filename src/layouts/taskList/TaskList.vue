@@ -78,7 +78,7 @@
                 <div class="col-span-9 w-full" style="height: 75vh;">
                     <!-- <iframe :src="pdfUrl" style="width: 100%;height:100%;" sandbox="allow-same-origin"
                         referrerpolicy="no-referrer" /> -->
-                    <iframe v-if="pdfUrl" :src="pdfUrl" width="600" height="400" type="application/pdf"></iframe>
+                    <iframe v-if="pdfUrl" :src="pdfUrl" width="100%" height="100%" type="application/pdf"></iframe>
                 </div>
 
             </div>
