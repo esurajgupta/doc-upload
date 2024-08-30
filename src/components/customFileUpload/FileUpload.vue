@@ -1,6 +1,6 @@
 <template>
-    <div class="border px-16 py-12 rounded bg-sky-50/50">
-        <div class="flex justify-center items-center flex-col" @click="onClickSimulation()" style="cursor: pointer;">
+    <div class="border px-16 py-12 rounded bg-sky-50/50" @click="onClickSimulation()" style="cursor: pointer;">
+        <div class="flex justify-center items-center flex-col">
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 50 50"
                 style="fill: #5D9FEC;opacity:0.5;">
                 <path

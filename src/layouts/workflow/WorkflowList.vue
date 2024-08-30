@@ -1,8 +1,10 @@
 <template>
     <div class="bgBlue h-full w-full flex  flex-col relative ">
         <div class="flex justify-end m-2" v-if="this.userType === 'admin'">
-            <Button label="Create WorkFlow +" severity="info" outlined
-                @click="this.$router.push('/translanding/createWorkflow')" />
+            <Button label="Create WorkFlow +" severity="info" outlined @click="this.$router.push({
+                path: '/translanding/createWorkflow',
+                state: { secretData: 'This is hidden data' }
+            })" />
         </div>
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl" style="width:-webkit-fill-available;">
             <div class="flex">
@@ -14,6 +16,8 @@
             </div>
 
             <DataTable :value="workflow" stripedRows tableStyle="min-width: 50rem">
+
+                <template #empty> No data found. </template>
                 <Column field="workflowType.title" header="Workflow Type"></Column>
                 <Column field="description" header="Description"></Column>
                 <Column field="userId.userName" header="Assigned User"></Column>
@@ -26,7 +30,7 @@
                 <Column field="action" header="Action" dataType="boolean" v-if="this.userType === 'user'">
                     <template #body="{ data }" class="">
                         <div class="h-full w-full flex justify-start items-center pl-4">
-                            <span class="pi pi-eye" @click="this.uploadDocsForTasks()"></span>
+                            <span class="pi pi-cloud-upload" @click="this.uploadDocsForTasks(data?.taskId)"></span>
                         </div>
                     </template>
                 </Column>
@@ -52,11 +56,23 @@ export default {
     methods: {
         async fetchWorkFlowData() {
             await fetchDBTaskList((res) => {
-                this.workflow = res;
+                let tempArr = res.filter((item) => item.userId.userName === localStorage.getItem("userName"));
+                if (localStorage.getItem("role") === constant.adminUserName) {
+                    this.workflow = res;
+                } else {
+                    this.workflow = tempArr;
+                }
             })
         },
-        async uploadDocsForTasks() {
-            this.$router.push("/translanding/uploadDocument");
+        async uploadDocsForTasks(taskId) {
+            this.$router.push({
+                path: "/translanding/uploadDocument",
+                state: { taskId: taskId }
+            });
+        },
+        onClickEyeIcon(taskId) {
+            localStorage.setItem("taskId", taskId);
+
         }
     },
     mounted() {

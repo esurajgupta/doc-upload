@@ -3,7 +3,8 @@
         <div class="flex items-center justify-between px-4 pt-4 shrink-0">
             <img src="/src/assets/TA-DocuFlowLogo.jpg" class="w-10 h-10 rounded-full">
             <span class="inline-flex items-center gap-2 justify-center w-full py-3">
-                <span class="font-semibold text-2xl" style="font-size: 1.3rem; letter-spacing: -0.5px">TA - DocuFlow</span>
+                <span class="font-semibold text-2xl" style="font-size: 1.3rem; letter-spacing: -0.5px">TA -
+                    DocuFlow</span>
             </span>
         </div>
         <hr class="mt-2 mb-1" />
@@ -66,6 +67,7 @@
 </template>
 <script>
 import MenuIcon from "@/components/MenuIcon.vue";
+import { constant } from "@/constants/constants";
 export default {
     name: "SideBar",
     components: { MenuIcon },
@@ -88,9 +90,17 @@ export default {
         menuListItem() {
             const menuList = [
                 { "menuUrl": "/translanding/workflowList", "menuIcon": "quotation", "menuName": "Workflow", "parentmenuid": null, "isActive": false, "children": [] },
-                { "menuUrl": "/translanding/taskList", "menuIcon": "network", "menuName": "Tasks", "parentmenuid": null, "isActive": false, "children": [] },
                 // { "menuUrl": "/translanding/user", "menuIcon": "user", "menuName": "User", "parentmenuid": null, "isActive": false, "children": [] },
             ]
+            if (localStorage.getItem("role") === constant.adminUserName) {
+                menuList.push(
+                    { "menuUrl": "/translanding/taskList", "menuIcon": "network", "menuName": "Tasks", "parentmenuid": null, "isActive": false, "children": [] }
+                );
+                menuList.push(
+                    { "menuUrl": "/translanding/myFiles", "menuIcon": "user", "menuName": "My Files", "parentmenuid": null, "isActive": false, "children": [] }
+                );
+
+            };
             this.menus = menuList
         },
         generateColor() {

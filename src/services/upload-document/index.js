@@ -32,7 +32,7 @@ export const uploadDocuments = async (params = {}, payload, callback) => {
 export const createNewProcess = async (payload, callback) => {
     await httpClient.post(endpoints.createProcessInstance, payload, {
         auth: {
-            username: 'admin',
+            username: localStorage.getItem("userName"),
             password: 'admin'
         }
     }).then((res) => {
@@ -47,7 +47,7 @@ export const assignDocToProcess = async (payload, callback) => {
         id: payload.id
     }, {
         auth: {
-            username: 'admin',
+            username: localStorage.getItem("userName"),
             password: 'admin'
         }
     }).then((res) => {

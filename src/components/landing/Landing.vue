@@ -1,6 +1,7 @@
 <template>
     <div class="absolute w-full bg-surface-200 min-h-100"></div>
-    <div class="fixed grid grid-cols-12 grid-flow-col h-full max-h-screen min-w-full bg-slate-50">
+    <div class="fixed grid grid-cols-12 grid-flow-col h-full max-h-screen min-w-full "
+        style="background-color: #f3f3f3;">
         <div class="ml-2 mt-2  card inset-y-0 overflow-y-auto transition-transform duration-200 sidebar-menu bg-white rounded shadow-md"
             :class="`${sidebarVisible ? 'col-span-2 ' : 'hidden'}`" style=" transition: 'transform 0.2s ease-in-out' "
             :style="{ transform: sidebarVisible ? 'translateX(0)' : 'translateX(-100%)' }">

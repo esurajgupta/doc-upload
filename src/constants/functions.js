@@ -6,9 +6,11 @@ export const parserXML = (xml) => {
 }
 
 export const sortTaskRelatedDocs = (documents, documentId) => {
+    const splitedArr = documentId.map((item) => item.split(",").shift());
+    console.log(splitedArr, "split");
     let sortedDocs = [];
     documents.forEach((doc) => {
-        if (documentId.includes(doc?.entry?.id)) {
+        if (splitedArr.includes(doc?.entry?.id)) {
             sortedDocs.push(doc);
         }
     });

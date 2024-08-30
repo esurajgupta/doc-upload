@@ -23,7 +23,7 @@
                     <div>
                         <h4 class="text-4xl font-bold mb-4 font-sans">Sign in</h4>
                     </div>
-                    <spam class="text-gray-070 text-lg font-sans mt-8">Empowering your financial experience</spam>
+                    <!-- <spam class="text-gray-070 text-lg font-sans mt-8">Empowering your financial experience</spam> -->
                     <div class="py-4 mt-1">
                         <div class="mt-1">
                             <input v-model="email" type="email" id="email" name="email" placeholder="Enter email here"
@@ -93,6 +93,7 @@ export default {
         load() {
             this.loading = true;
             if (this.email && this.password === constant.commonUserPass) {
+                localStorage.setItem("userName", this.email);
                 if (this.email === constant.adminUserName) {
                     localStorage.setItem("role", "admin");
                 } else {

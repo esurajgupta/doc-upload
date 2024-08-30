@@ -4,7 +4,7 @@ import { httpClient } from "../interceptor"
 export const getAlfrescoTaskList = async (callback) => {
     await httpClient.get(endpoints.getAlfrescoTaskListURL, {
         auth: {
-            username: 'admin',
+            username: localStorage.getItem("userName"),
             password: 'admin'
         },
     }).then((res) => {
@@ -17,7 +17,7 @@ export const getAlfrescoTaskList = async (callback) => {
 export const approveDocument = async (payload, callback) => {
     await httpClient.put(endpoints.documentApproveURL + `${payload.taskId}?select=state`, payload.payload, {
         auth: {
-            username: 'admin',
+            username: localStorage.getItem("userName"),
             password: 'admin'
         }
     }).then((res) => {

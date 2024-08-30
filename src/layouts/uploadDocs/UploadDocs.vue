@@ -33,6 +33,7 @@ import { assignDocToProcess, createNewProcess, getTokenForUser, uploadDocsInfoTo
 import { constant } from '@/constants/constants';
 import { parserXML } from '@/constants/functions';
 import router from '@/router';
+import { httpClient } from '@/services/interceptor';
 
 export default {
     name: "UploadDocs",
@@ -43,6 +44,7 @@ export default {
     data() {
         return {
             docList: ref([]),
+            taskId: window.history.state.taskId,
             userToken: "",
             searchParams: new URLSearchParams(window.location.search)
         }
@@ -71,7 +73,7 @@ export default {
 
         },
         async generateToken() {
-            const userName = this.searchParams.get("user");
+            const userName = localStorage.getItem("userName");
             await getTokenForUser({
                 userName,
                 password: constant.commonUserPass
@@ -99,6 +101,7 @@ export default {
                     return
                 }
                 this.$toast.add({ severity: 'success', detail: 'Uploaded Successfully', life: 3000 });
+                httpClient.get("/api/v1/documentUploaded/" + localStorage.getItem("userName"));
                 this.startProcess(res?.data);
             });
         },
@@ -115,7 +118,7 @@ export default {
                     this.$toast.add({ severity: 'danger', detail: 'Error occurred while initiating workflow', life: 3000 });
                 } else {
                     this.$toast.add({ severity: 'success', detail: 'WorkFlow initiated sucessfully', life: 3000 });
-
+                    httpClient.get("/api/v1/workFlowInitiate/" + `${localStorage.getItem("userName")}/${this.taskId}/${res?.entry?.id}`)
                     const tempPayload = {
                         taskId: res?.entry?.id,
                         id: `workspace://SpacesStore/${docDetails?.entry?.id}`
@@ -129,9 +132,9 @@ export default {
                     })
 
                     const docsInfoPayload = {
-                        "taskId": parseInt(this.searchParams.get("taskId")),
+                        "taskId": parseInt(this.taskId),
                         "alferscoId": parseInt(res?.entry?.id),
-                        userName: this.searchParams.get("user"),
+                        userName: localStorage.getItem("userName"),
                         "documents": [
                             {
                                 "uplodedDocumentId": docDetails?.entry?.id,
@@ -140,7 +143,7 @@ export default {
                         ]
                     };
                     await uploadDocsInfoToDB(docsInfoPayload, (res) => {
-                        setTimeout(() => router.push("/tasklist"), 1000);
+                        setTimeout(() => router.push("/translanding/workflowList"), 1000);
                     });
                 }
             });
@@ -148,6 +151,9 @@ export default {
     },
     mounted() {
         this.generateToken();
+        console.log(window.history.state);
+
+
     },
     updated() {
         console.log(this.docList, "testst");

@@ -3,10 +3,10 @@
         <ProgressSpinner fill="transparent" animationDuration=".5s" aria-label="Custom ProgressSpinner" />
     </div>
     <div class="bgBlue h-full w-full flex  flex-col relative ">
-        <div class="flex justify-end m-2">
+        <!-- <div class="flex justify-end m-2">
             <Button label="Create Task" severity="info" outlined
                 @click="this.$router.push('/translanding/createTask')" />
-        </div>
+        </div> -->
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl" style="width:-webkit-fill-available;">
             <div class="flex">
                 <div class="grid grid-cols-12 gap-2 w-full">
@@ -35,9 +35,7 @@
                             :class="[this.tabvalue === 1 ? 'active bg-gray-100  textBlue' : '']">Completed</a>
                     </li>
                 </ul>
-
             </div>
-
             <DataTable :value="tasks" stripedRows tableStyle="min-width: 50rem">
                 <Column field="entry.name" header="Task Name"></Column>
                 <Column field="entry.description" header="Task Description"></Column>
@@ -52,7 +50,8 @@
                     <template #body="{ data }" class="">
                         <!-- <IconField> -->
                         <div class="h-full w-full flex justify-start items-center pl-4">
-                            <span class="pi pi-eye" @click="changeModalVisibilty(data?.entry?.processId)"></span>
+                            <span class="pi pi-file-edit"
+                                @click="changeModalVisibilty(data?.entry?.id, data?.entry?.processId)"></span>
                         </div>
                         <!-- </IconField> -->
                     </template>
@@ -61,22 +60,35 @@
         </div>
     </div>
     <Dialog v-model:visible="visible" header="Document Verification"
-        :style="{ width: '25rem', backgroundColor: '#ffffff' }" position="right" :modal="true" :draggable="false">
-        <div class="flex flex-col">
+        :style="{ width: '75vw', backgroundColor: '#ffffff' }" position="center" :modal="true" :draggable="false"
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <div class="flex flex-col bg-slate-50 p-1">
             <div class="grid grid-cols-12 gap-2">
-                <div class="col-span-6 m-2 border-solid border-2 border-gray-300 rounded-full flex justify-center cursor-pointer"
-                    v-for="(item, index) in this.documents">
-                    {{ item.file }}
+                <div class="col-span-3">
+                    <div class="">
+                        <p class="text-lg font-medium text-slate-500">Uploaded Documents</p>
+                    </div>
+                    <div class="grid grid-cols-12 ">
+                        <div class="col-span-12 mt-2 rounded flex  cursor-pointer"
+                            v-for="(item, index) in this.selectedDocs" @click="console.log(item)">
+                            {{ index + 1 + ". " + item?.entry?.name }}
+                        </div>
+                    </div>
                 </div>
+                <div class="col-span-9 w-full" style="height: 75vh;">
+                    <iframe :src="this.iframeUrl" style="width: 100%;height:100%;"
+                        sandbox="allow-scripts allow-same-origin" />
+                </div>
+
             </div>
-            <div class="flex gap-2 justify-end mt-3">
-                <div>
-                    <Button label="Reject" severity="danger" size="small" style="font-size: small;"
-                        @click="this.onClickReject()" />
-                </div>
-                <div>
-                    <Button label="Approve" severity="success" size="small" style="font-size: small;" />
-                </div>
+        </div>
+        <div class="flex gap-2 justify-end mt-3">
+            <div>
+                <Button label="Reject" severity="danger" size="small" style="font-size: small;"
+                    @click="this.onClickReject()" />
+            </div>
+            <div>
+                <Button label="Approve" severity="success" size="small" style="font-size: small;" />
             </div>
         </div>
     </Dialog>
@@ -85,11 +97,12 @@
 </template>
 
 <script>
-import { findUserFolderId, findUserId, sortTaskRelatedDocs } from '@/constants/functions';
+import { findUserFolderId, findUserId, parserXML, sortTaskRelatedDocs } from '@/constants/functions';
 import endpoints from '@/services/endpoints';
 import { httpClient } from '@/services/interceptor';
 import { fetchTaskDocuments } from '@/services/task-creation';
 import { approveDocument, getAlfrescoTaskList } from '@/services/task-list';
+import { getTokenForUser } from '@/services/upload-document';
 import { ref } from 'vue';
 
 export default {
@@ -98,10 +111,13 @@ export default {
     data() {
         return {
             userToken: "",
+            iframeUrl: `http://localhost:8080/alfresco/api/-default-/public/alfresco/versions/1/nodes/940ca0f4-0630-48c7-92af-6f384430d0fb/content?alf_ticket=${this.userToken}`,
             visible: false,
             selectedTask: null,
+            processId: null,
             tabvalue: 0,
-            documents: [{ file: "test file" }, { file: "test file4" }, { file: "test file2" }, { file: "test file3" }],
+            documents: [],
+            selectedDocs: [],
             tasks: ref([]),
         }
     },
@@ -148,6 +164,10 @@ export default {
                 this.visible = !this.visible;
                 if (res && res?.status && res.status === 200) {
                     this.$toast.add({ severity: 'success', detail: "Task rejected successfully ", life: 3000 });
+                    httpClient.get("/api/v1/documentRejected/" + this.documents[0].split(",").pop() + `/${this.processId}`);
+                    this.getAlfrescoTask();
+
+
                 } else {
                     this.$toast.add({ severity: 'error', detail: "error occured", life: 3000 });
                 }
@@ -166,11 +186,12 @@ export default {
         //     })
         //     this.visible = !this.visible;
         // },
-        async changeModalVisibilty(taskId) {
+        async changeModalVisibilty(taskId, processId) {
             console.log(taskId);
             this.selectedTask = taskId;
             this.visible = !this.visible;
-            this.getFiles(taskId);
+            this.processId = processId;
+            this.getFiles(processId);
         },
         async getTaskList() {
             const response = await httpClient.get(endpoints.getTasklistURL);
@@ -184,36 +205,45 @@ export default {
             });
         },
         async getFiles(taskId) {
-
             await fetchTaskDocuments(taskId, (res) => {
                 // const finalArr = sortTaskRelatedDocs(docsList, res);
                 this.documents = res;
             });
             const docsList = await httpClient.get(`${endpoints.getDocuments}`, {
                 auth: {
-                    username: "admin",
+                    username: localStorage.getItem("userName"),
                     password: "admin"
                 }
             });
             const folderList = await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/` + findUserFolderId(docsList?.data?.list?.entries) + "/children", {
                 auth: {
-                    username: "admin",
+                    username: localStorage.getItem("userName"),
                     password: "admin"
                 }
             });
             const userDocList = await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/` + findUserId(folderList?.data?.list?.entries, this.documents[0].split(",").pop()) + "/children", {
                 auth: {
-                    username: "admin",
+                    username: localStorage.getItem("userName"),
                     password: "admin"
                 }
             });
-            console.log(userDocList, "test");
+            const finalArr = sortTaskRelatedDocs(userDocList?.data?.list?.entries, this.documents);
+            this.selectedDocs = finalArr;
+            console.log(finalArr);
+
+            console.log(userDocList?.data?.list?.entries, this.documents);
 
         }
     },
     mounted() {
         // this.getTaskList();
         this.getAlfrescoTask();
+        getTokenForUser({
+            userName: "admin",
+            password: "admin"
+        }, (res) => {
+            this.userToken = parserXML(res);
+        })
     }
 }
 

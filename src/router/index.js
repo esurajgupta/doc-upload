@@ -5,6 +5,7 @@ import TaskCreation from '@/layouts/taskCreation/TaskCreation.vue'
 import Landing from '@/components/landing/Landing.vue'
 import TaskList from '@/layouts/taskList/TaskList.vue'
 import WorkflowList from '@/layouts/workflow/WorkflowList.vue'
+import MyFiles from '@/layouts/myFiles/MyFiles.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,6 +62,19 @@ const router = createRouter({
             }, {
               label: "WorkflowList",
               route: "/translanding/workflowList"
+            }]
+          }
+        },
+        {
+          path: 'myFiles',
+          name: 'myFiles',
+          component: MyFiles,
+          meta: {
+            breadcrumb: [{
+              label: "MyFiles"
+            }, {
+              label: "MyFiles",
+              route: "/translanding/myFiles"
             }]
           }
         },
