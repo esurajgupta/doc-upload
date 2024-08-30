@@ -2,7 +2,7 @@
     <div class="card flex justify-center absolute z-10 w-full h-full  items-center hidden">
         <ProgressSpinner fill="transparent" animationDuration=".5s" aria-label="Custom ProgressSpinner" />
     </div>
-    <div class="bgBlue h-full w-full flex  flex-col relative ">
+    <div class="bgBlue h-screen w-full flex  flex-col relative ">
         <!-- <div class="flex justify-end m-2">
             <Button label="Create Task" severity="info" outlined
                 @click="this.$router.push('/translanding/createTask')" />
@@ -69,9 +69,48 @@
                         <p class="text-lg font-medium text-slate-500">Uploaded Documents</p>
                     </div>
                     <div class="grid grid-cols-12 ">
-                        <div class="col-span-12 mt-2 rounded flex  cursor-pointer"
-                            v-for="(item, index) in this.selectedDocs" @click="this.getPdfFile()">
-                            {{ index + 1 + ". " + item?.entry?.name }}
+                        <div class="col-span-12 mt-2 rounded flex cursor-pointer"
+                            v-for="(item, index) in this.selectedDocs" @click="this.getPdfFile(item)">
+                            <div class="flex flex-col">
+                                <span class="text-md font-bold"
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name">File</span>
+                                <span class="text-sm">{{ index + 1 + ". " + item?.entry?.name }} <i v-if="!this.copied"
+                                        @click="copyToClipboard(item)"
+                                        class="pi pi-copy text-lg transform scale-y-[-1]"></i></span>
+                                <span class="text-md font-bold"
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name">Properties</span>
+                                <span class="text-sm"
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"><i
+                                        class="pi pi-reply text-xs transform scale-y-[-1]"></i> {{ `Mimetype :
+                                    ${item?.entry?.content.mimeTypeName}` }}</span>
+                                <span class="text-sm"
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"><i
+                                        class="pi pi-reply text-xs transform scale-y-[-1]"></i> {{ `Size :
+                                    ${bytesToMB(item?.entry?.content?.sizeInBytes)} MB` }}</span>
+                                <span class="text-sm"
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"><i
+                                        class="pi pi-reply text-xs transform scale-y-[-1]"></i> {{ `Creator :
+                                    ${item?.entry?.createdByUser?.displayName}` }}</span>
+                                <span class="text-sm "
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"><i
+                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Created At :
+                                    ${formatDate(new Date(item?.entry?.createdAt))}` }}</span>
+                                <span class="text-md font-bold"
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name">Version
+                                    History</span>
+                                <span class="text-sm"
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"><i
+                                        class="pi pi-reply text-xs transform scale-y-[-1]"></i> {{ `Modifier :
+                                    ${item?.entry?.modifiedByUser?.displayName}` }}</span>
+                                <span class="text-sm "
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"><i
+                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Modified At :
+                                    ${formatDate(new Date(item?.entry?.modifiedAt))}` }}</span>
+                                <span class="text-sm "
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"><i
+                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `(No Comment)`
+                                    }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -106,6 +145,7 @@ import { approveDocument, getAlfrescoTaskList } from '@/services/task-list';
 import { getTokenForUser } from '@/services/upload-document';
 import { ref } from 'vue';
 
+
 export default {
     name: "TaskList",
     components: {},
@@ -121,6 +161,8 @@ export default {
             documents: [],
             selectedDocs: [],
             tasks: ref([]),
+            selectedDoc: null,
+            copied: false,
         }
     },
     methods: {
@@ -236,8 +278,9 @@ export default {
             console.log(userDocList?.data?.list?.entries, this.documents);
 
         },
-        async getPdfFile() {
-            await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/940ca0f4-0630-48c7-92af-6f384430d0fb/content`, {
+        async getPdfFile(item) {
+            this.selectedDoc = item;
+            await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/${item?.entry?.id}/content`, {
                 auth: {
                     username: "admin",
                     password: "admin"
@@ -255,7 +298,31 @@ export default {
                 // link.click();
                 // link.remove();
             })
+        },
+        bytesToMB(bytes) {
+            const megabytes = bytes / (1024 * 1024);
+            return megabytes.toFixed(2); // Returns the result rounded to 2 decimal places
+        },
+        copyToClipboard(item) {
+            navigator.clipboard.writeText(this.pdfUrl).then(() => {
+                this.copied = true;
+                setTimeout(() => {
+                    this.copied = false; // Reset the copied message after 2 seconds
+                }, 3000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        },
+        formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${day}-${month}-${year} ${hours}:${minutes}`;
         }
+
     },
     mounted() {
         // this.getTaskList();

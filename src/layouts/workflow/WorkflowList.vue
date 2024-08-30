@@ -1,5 +1,5 @@
 <template>
-    <div class="bgBlue h-full w-full flex  flex-col relative ">
+    <div class="bgBlue h-screen overflow-y-scroll w-full flex  flex-col relative ">
         <div class="flex justify-end m-2" v-if="this.userType === 'admin'">
             <Button label="Create WorkFlow +" severity="info" outlined @click="this.$router.push({
                 path: '/translanding/createWorkflow',
