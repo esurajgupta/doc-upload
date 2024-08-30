@@ -14,9 +14,7 @@
                     </div>
                 </div>
             </div>
-
             <DataTable :value="workflow" stripedRows tableStyle="min-width: 50rem">
-
                 <template #empty> No data found. </template>
                 <Column field="workflowType.title" header="Workflow Type"></Column>
                 <Column field="description" header="Description"></Column>
@@ -36,7 +34,6 @@
                 </Column>
             </DataTable>
         </div>
-
     </div>
 
 </template>

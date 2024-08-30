@@ -70,14 +70,15 @@
                     </div>
                     <div class="grid grid-cols-12 ">
                         <div class="col-span-12 mt-2 rounded flex  cursor-pointer"
-                            v-for="(item, index) in this.selectedDocs" @click="console.log(item)">
+                            v-for="(item, index) in this.selectedDocs" @click="this.getPdfFile()">
                             {{ index + 1 + ". " + item?.entry?.name }}
                         </div>
                     </div>
                 </div>
                 <div class="col-span-9 w-full" style="height: 75vh;">
-                    <iframe :src="this.iframeUrl" style="width: 100%;height:100%;"
-                        sandbox="allow-scripts allow-same-origin" />
+                    <!-- <iframe :src="pdfUrl" style="width: 100%;height:100%;" sandbox="allow-same-origin"
+                        referrerpolicy="no-referrer" /> -->
+                    <iframe v-if="pdfUrl" :src="pdfUrl" width="600" height="400" type="application/pdf"></iframe>
                 </div>
 
             </div>
@@ -111,11 +112,12 @@ export default {
     data() {
         return {
             userToken: "",
-            iframeUrl: `http://localhost:8080/alfresco/api/-default-/public/alfresco/versions/1/nodes/940ca0f4-0630-48c7-92af-6f384430d0fb/content?alf_ticket=${this.userToken}`,
+            iframeUrl: `http://localhost:8080/content?alf_ticket=${this.userToken}`,
             visible: false,
             selectedTask: null,
             processId: null,
             tabvalue: 0,
+            pdfUrl: null,
             documents: [],
             selectedDocs: [],
             tasks: ref([]),
@@ -233,6 +235,26 @@ export default {
 
             console.log(userDocList?.data?.list?.entries, this.documents);
 
+        },
+        async getPdfFile() {
+            await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/940ca0f4-0630-48c7-92af-6f384430d0fb/content`, {
+                auth: {
+                    username: "admin",
+                    password: "admin"
+                },
+                responseType: 'blob'
+            }).then((res) => {
+                const binaryString = res?.data;
+                this.pdfUrl = window.URL.createObjectURL(binaryString);
+                // console.log(binaryString);
+                // const url = window.URL.createObjectURL(binaryString);
+                // const link = document.createElement('a');
+                // link.href = url;
+                // link.setAttribute('download', 'file.pdf'); // Replace 'file.pdf' with the desired file name
+                // document.body.appendChild(link);
+                // link.click();
+                // link.remove();
+            })
         }
     },
     mounted() {
