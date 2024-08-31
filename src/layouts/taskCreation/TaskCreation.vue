@@ -26,7 +26,7 @@
                     <div class="flex flex-col gap-2 mt-2">
                         <label for="username">Description</label>
                         <textarea class="resize rounded-md textarea" rows="5" v-model="this.description"
-                            :style="{ 'border': '1px solid rgb(229, 231, 235)' }"></textarea>
+                            :style="{ 'border': '1px solid rgb(229, 231, 235)', 'padding': '0.5rem' }"></textarea>
                     </div>
                 </div>
             </div>

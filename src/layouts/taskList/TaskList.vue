@@ -36,7 +36,9 @@
                     </li>
                 </ul>
             </div>
-            <DataTable :value="filteredTasks" stripedRows tableStyle="min-width: 50rem" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]">
+            <DataTable :value="filteredTasks" stripedRows tableStyle="min-width: 50rem" paginator :rows="5"
+                :rowsPerPageOptions="[5, 10, 20, 50]">
+                <template #empty> No data found. </template>
                 <Column field="entry.name" header="Task Name"></Column>
                 <Column field="entry.description" header="Task Description"></Column>
                 <Column field="entry.activityDefinitionId" header="Status"></Column>
@@ -129,7 +131,8 @@
                     @click="this.onClickReject()" />
             </div>
             <div>
-                <Button label="Approve" severity="success" size="small" style="font-size: small;" />
+                <Button label="Approve" severity="success" size="small" style="font-size: small;"
+                    @click="this.onClickAccept()" />
             </div>
         </div>
     </Dialog>
@@ -225,6 +228,37 @@ export default {
 
             })
         },
+        async onClickAccept() {
+            const payload = {
+                payload: {
+                    "state": "completed",
+                    "variables": [
+                        {
+                            "name": "bpm_priority",
+                            "type": "d_int",
+                            "value": 1,
+                            "scope": "global"
+                        }
+                    ]
+                },
+                taskId: this.selectedTask
+            };
+            await approveDocument(payload, (res) => {
+                this.visible = !this.visible;
+                if (res && res?.status && res.status === 200) {
+                    this.$toast.add({ severity: 'success', detail: "Task Approved successfully ", life: 3000 });
+                    httpClient.get("/api/v1/documentRejected/" + this.documents[0].split(",").pop() + `/${this.processId}`);
+                    this.getAlfrescoTask();
+
+
+                } else {
+                    this.$toast.add({ severity: 'error', detail: "error occured", life: 3000 });
+                }
+
+                console.log(res);
+
+            })
+        },
         async changeModalVisibilty(taskId, processId) {
             console.log(taskId);
             this.selectedTask = taskId;
@@ -274,6 +308,7 @@ export default {
             // const finalArr = sortTaskRelatedDocs(userDocList?.data?.list?.entries, this.documents); //not working
             const finalArr = userDocList?.data?.list?.entries;
             this.selectedDocs = finalArr;
+            this.selectedDoc = finalArr[0];
             await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/${finalArr[0]?.entry?.id}/content`, {
                 auth: {
                     username: "admin",

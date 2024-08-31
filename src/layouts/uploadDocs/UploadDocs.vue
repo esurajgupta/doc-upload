@@ -117,7 +117,7 @@ export default {
                 if (JSON.stringify(res).includes("AxiosError")) {
                     this.$toast.add({ severity: 'danger', detail: 'Error occurred while initiating workflow', life: 3000 });
                 } else {
-                    this.$toast.add({ severity: 'success', detail: 'Workflow initiated sucessfully', life: 3000 });
+                    // this.$toast.add({ severity: 'success', detail: 'Workflow initiated sucessfully', life: 3000 });
                     httpClient.get("/api/v1/workFlowInitiate/" + `${localStorage.getItem("userName")}/${this.taskId}/${res?.entry?.id}`)
                     const tempPayload = {
                         taskId: res?.entry?.id,

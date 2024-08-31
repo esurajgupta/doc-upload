@@ -26,7 +26,7 @@
                     <!-- <spam class="text-gray-070 text-lg font-sans mt-8">Empowering your financial experience</spam> -->
                     <div class="py-4 mt-1">
                         <div class="mt-1">
-                            <input v-model="email" type="email" id="email" name="email" placeholder="Enter email here"
+                            <input v-model="email" type="email" id="email" name="email" placeholder="Enter Username"
                                 class="mt-1 h-14 p-2 w-full border rounded-md" />
                         </div>
                         <div class="mt-4">
