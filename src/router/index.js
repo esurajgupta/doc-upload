@@ -78,19 +78,19 @@ const router = createRouter({
         //     }]
         //   }
         // },
-        {
-          path: 'myFiles',
-          name: 'myFiles',
-          component: MyFiles,
-          meta: {
-            breadcrumb: [{
-              label: "MyFiles"
-            }, {
-              label: "My Files",
-              route: "/translanding/myFiles"
-            }]
-          }
-        },
+        // {
+        //   path: 'myFiles',
+        //   name: 'myFiles',
+        //   component: MyFiles,
+        //   meta: {
+        //     breadcrumb: [{
+        //       label: "MyFiles"
+        //     }, {
+        //       label: "My Files",
+        //       route: "/translanding/myFiles"
+        //     }]
+        //   }
+        // },
         { path: "", redirect: '/translanding/workflowList' }
       ]
     },
