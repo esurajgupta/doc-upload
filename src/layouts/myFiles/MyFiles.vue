@@ -21,11 +21,6 @@
                             <!-- <Rating :modelValue="slotProps.data.rating" readonly /> -->
                         </template>
                     </Column>
-                    <Column header="Status">
-                        <template #body="slotProps">
-                            <Tag :value="slotProps.data.inventoryStatus" :severity="getSeverity(slotProps.data)" />
-                        </template>
-                    </Column>
                     <template #expansion="slotProps">
                         <div class="p-4">
                             <h5>Orders for {{ slotProps.data.name }}</h5>
