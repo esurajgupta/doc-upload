@@ -36,7 +36,7 @@
                     </li>
                 </ul>
             </div>
-            <DataTable :value="filteredTasks" stripedRows tableStyle="min-width: 50rem">
+            <DataTable :value="filteredTasks" stripedRows tableStyle="min-width: 50rem" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]">
                 <Column field="entry.name" header="Task Name"></Column>
                 <Column field="entry.description" header="Task Description"></Column>
                 <Column field="entry.activityDefinitionId" header="Status"></Column>
