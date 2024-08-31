@@ -95,9 +95,9 @@ export default {
                 menuList.push(
                     { "menuUrl": "/translanding/myFiles", "menuIcon": "pi pi-folder-open", "menuName": "My Files", "parentmenuid": null, "isActive": false, "children": [] }
                 );
-                menuList.push(
-                    { "menuUrl": "/translanding/erpTaskList", "menuIcon": "pi pi-clone", "menuName": "Erp Tasks", "parentmenuid": null, "isActive": false, "children": [] }
-                );
+                // menuList.push(
+                //     { "menuUrl": "/translanding/erpTaskList", "menuIcon": "pi pi-clone", "menuName": "Erp Tasks", "parentmenuid": null, "isActive": false, "children": [] }
+                // );
 
             };
             this.menus = menuList

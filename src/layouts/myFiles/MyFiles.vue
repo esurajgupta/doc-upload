@@ -13,15 +13,12 @@
                     </template>
                     <Column expander style="width: 5rem" />
                     <Column field="name" header="Name"></Column>
-                    <Column field="price" header="Price">
+                    <Column field="category" header="Type"></Column>
+                    <Column field="rating" header="Size"></Column>
+                    <Column field="rating" header="Description"></Column>
+                    <Column field="rating" header="Action">
                         <template #body="slotProps">
-                            {{ formatCurrency(slotProps.data.price) }}
-                        </template>
-                    </Column>
-                    <Column field="category" header="Category"></Column>
-                    <Column field="rating" header="Reviews">
-                        <template #body="slotProps">
-                            <Rating :modelValue="slotProps.data.rating" readonly />
+                            <!-- <Rating :modelValue="slotProps.data.rating" readonly /> -->
                         </template>
                     </Column>
                     <Column header="Status">
