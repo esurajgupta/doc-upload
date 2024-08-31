@@ -14,7 +14,8 @@ const endpoints = {
         getAlfrescoTaskListURL: "/alfresco/api/-default-/public/workflow/versions/1/tasks",
         documentApproveURL: "/alfresco/api/-default-/public/workflow/versions/1/tasks/",
         uploadDocumentDetails: "/api/v1/uploadDocument",
-        fetchDocsLinkedWithTask: "/api/v1/fetchDocument/"
+        fetchDocsLinkedWithTask: "/api/v1/fetchDocument/",
+        getActiveTaskList: "/alfresco/api/-default-/public/workflow/versions/1/tasks?state=completed"
 };
 
 export default endpoints;

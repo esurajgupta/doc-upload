@@ -1,4 +1,5 @@
 export const constant = {
     commonUserPass: "admin",
-    adminUserName: "admin"
+    adminUserName: "admin",
+    reviewId: "reviewTask"
 }

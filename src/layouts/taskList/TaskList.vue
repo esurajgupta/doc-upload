@@ -2,7 +2,7 @@
     <div class="card flex justify-center absolute z-10 w-full h-full  items-center hidden">
         <ProgressSpinner fill="transparent" animationDuration=".5s" aria-label="Custom ProgressSpinner" />
     </div>
-    <div class="bgBlue h-screen w-full flex  flex-col relative ">
+    <div class="bgBlue h-screen  overflow-y-scroll w-full flex  flex-col relative ">
         <!-- <div class="flex justify-end m-2">
             <Button label="Create Task" severity="info" outlined
                 @click="this.$router.push('/translanding/createTask')" />
@@ -14,10 +14,10 @@
                         <p class="text-md font-medium text-slate-400"> Tasklist</p>
                     </div>
                     <div class="col-span-6 flex justify-end items-center">
-                        <IconField>
+                        <!-- <IconField>
                             <InputIcon class="pi pi-search" />
                             <InputText v-model="value1" placeholder="Search" size="small" />
-                        </IconField>
+                        </IconField> -->
                     </div>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                     </li>
                 </ul>
             </div>
-            <DataTable :value="tasks" stripedRows tableStyle="min-width: 50rem">
+            <DataTable :value="filteredTasks" stripedRows tableStyle="min-width: 50rem">
                 <Column field="entry.name" header="Task Name"></Column>
                 <Column field="entry.description" header="Task Description"></Column>
                 <Column field="entry.activityDefinitionId" header="Status"></Column>
@@ -46,7 +46,8 @@
                             class="text-md font-medium" style="color: white" />
                     </template> -->
                 </Column>
-                <Column field="action" header="Action" dataType="boolean">
+                <Column field="action" header="Action" dataType="boolean"
+                    :class="[this.tabvalue === 1 ? 'hidden' : '']">
                     <template #body="{ data }" class="">
                         <!-- <IconField> -->
                         <div class="h-full w-full flex justify-start items-center pl-4">
@@ -144,8 +145,7 @@ import { fetchTaskDocuments } from '@/services/task-creation';
 import { approveDocument, getAlfrescoTaskList } from '@/services/task-list';
 import { getTokenForUser } from '@/services/upload-document';
 import { ref } from 'vue';
-
-
+import { constant } from "@/constants/constants";
 export default {
     name: "TaskList",
     components: {},
@@ -160,16 +160,21 @@ export default {
             pdfUrl: null,
             documents: [],
             selectedDocs: [],
-            tasks: ref([]),
+            tasks: [],
+            filteredTasks: [],
             selectedDoc: null,
             copied: false,
         }
     },
     methods: {
         onClickTab(val) {
-            console.log("method worinf");
-
+            console.log("method worin");
             this.tabvalue = val;
+            if (this.tabvalue === 0) {
+                this.filteredTasks = this.tasks.filter((item) => item?.entry?.activityDefinitionId === constant.reviewId)
+            } else {
+                this.filteredTasks = this.tasks.filter((item) => item?.entry?.activityDefinitionId !== constant.reviewId)
+            }
         },
         getSeverity(status) {
             switch (status) {
@@ -220,16 +225,6 @@ export default {
 
             })
         },
-        // async changeModalVisibilty(userName) {
-        //     await getTokenForUser({
-        //         userName,
-        //         password: constant.commonUserPass
-        //     }, (res) => {
-        //         this.userToken = parserXML(res);
-        //         this.getFiles(this.userToken)
-        //     })
-        //     this.visible = !this.visible;
-        // },
         async changeModalVisibilty(taskId, processId) {
             console.log(taskId);
             this.selectedTask = taskId;
@@ -237,14 +232,19 @@ export default {
             this.processId = processId;
             this.getFiles(processId);
         },
-        async getTaskList() {
-            const response = await httpClient.get(endpoints.getTasklistURL);
-            this.tasks = response.data
-        },
+        // async getTaskList() {
+        //     const response = await httpClient.get(endpoints.getTasklistURL);
+        //     this.tasks = response.data
+        // },
         async getAlfrescoTask() {
             await getAlfrescoTaskList((res) => {
                 this.tasks = res?.list?.entries;
-                console.log(res, "ffofofo");
+                if (this.tabvalue === 0) {
+                    this.filteredTasks = this.tasks.filter((item) => item?.entry?.activityDefinitionId === constant.reviewId)
+                } else {
+                    this.filteredTasks = this.tasks.filter((item) => item?.entry?.activityDefinitionId !== constant.reviewId)
+                }
+                console.log(this.tasks);
 
             });
         },
@@ -289,14 +289,6 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                // console.log(binaryString);
-                // const url = window.URL.createObjectURL(binaryString);
-                // const link = document.createElement('a');
-                // link.href = url;
-                // link.setAttribute('download', 'file.pdf'); // Replace 'file.pdf' with the desired file name
-                // document.body.appendChild(link);
-                // link.click();
-                // link.remove();
             })
         },
         bytesToMB(bytes) {
@@ -326,6 +318,8 @@ export default {
     },
     mounted() {
         // this.getTaskList();
+        console.log(constant, "fdsfas");
+
         this.getAlfrescoTask();
         getTokenForUser({
             userName: "admin",

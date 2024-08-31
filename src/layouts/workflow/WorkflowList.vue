@@ -47,7 +47,8 @@ export default {
     data() {
         return {
             workflow: [],
-            userType: localStorage.getItem('role')
+            userType: localStorage.getItem('role'),
+            userName: localStorage.getItem('userName')
         }
     },
     methods: {

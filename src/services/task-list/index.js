@@ -2,7 +2,7 @@ import endpoints from "../endpoints"
 import { httpClient } from "../interceptor"
 
 export const getAlfrescoTaskList = async (callback) => {
-    await httpClient.get(endpoints.getAlfrescoTaskListURL, {
+    await httpClient.get(endpoints.getActiveTaskList, {
         auth: {
             username: localStorage.getItem("userName"),
             password: 'admin'
