@@ -6,6 +6,7 @@ import Landing from '@/components/landing/Landing.vue'
 import TaskList from '@/layouts/taskList/TaskList.vue'
 import WorkflowList from '@/layouts/workflow/WorkflowList.vue'
 import MyFiles from '@/layouts/myFiles/MyFiles.vue'
+import ErpTaskList from '@/layouts/taskList/ErpTaskList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +35,7 @@ const router = createRouter({
             breadcrumb: [{
               label: "UploadDocuement"
             }, {
-              label: "UploadDocument",
+              label: "Upload Document",
               route: "/translanding/uploadDocument"
             }]
           }
@@ -47,7 +48,7 @@ const router = createRouter({
             breadcrumb: [{
               label: "TaskList"
             }, {
-              label: "TaskList",
+              label: "Task List",
               route: "/translanding/taskList"
             }]
           }
@@ -58,10 +59,22 @@ const router = createRouter({
           component: WorkflowList,
           meta: {
             breadcrumb: [{
-              label: "WorkflowList"
+              label: "Workflow List"
             }, {
-              label: "WorkflowList",
+              label: "Workflow List",
               route: "/translanding/workflowList"
+            }]
+          }
+        },
+        {
+          path:'ErpTaskList',
+          component: ErpTaskList,
+          meta: {
+            breadcrumb: [{
+              label: "ErpTaskList"
+            }, {
+              label: "Erp Task List",
+              route: "/translanding/ErpTaskList"
             }]
           }
         },
@@ -73,7 +86,7 @@ const router = createRouter({
             breadcrumb: [{
               label: "MyFiles"
             }, {
-              label: "MyFiles",
+              label: "My Files",
               route: "/translanding/myFiles"
             }]
           }

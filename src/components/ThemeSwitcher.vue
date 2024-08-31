@@ -1,6 +1,6 @@
 <template>
     <div class="p-1 mb-2 pr-2 card flex justify-between bg-white rounded shadow-md py-2">
-        <div class="flex gap-1 px-3">
+        <div class="flex gap-1 px-3 self-center">
             <div class="breadcrumb-nav ">
                 <Breadcrumb :home="home" :model="breadcrumbs">
                     <template #item="{ item, props }">
@@ -16,13 +16,13 @@
                         </a>
                     </template>
                 </Breadcrumb>
-                <div class="pl-5 text-xl font-bold" v-if="breadcrumbs && breadcrumbs.length">
+                <div class="pl-5 text-xl font-bold  text-blue-900" v-if="breadcrumbs && breadcrumbs.length">
                     {{ breadcrumbs[breadcrumbs.length - 1].label }}
                 </div>
             </div>
         </div>
         <div>
-                <Button size="small" @click="logout" label="Logout" icon="pi pi-signt" />
+                <Button size="small" class=" text-white" @click="logout" label="Logout" icon="pi pi-sign-out" />
         </div>
     </div>
 </template>

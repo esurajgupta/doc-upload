@@ -2,12 +2,12 @@
     <div class="bgBlue h-full w-full flex justify-center items-center">
         <div class="bg-white p-4 px-3 m-2 h-fit rounded shadow-3xl">
             <div class="">
-                <p class="text-xl text-slate-400">WorkFlow Creation </p>
+                <p class="text-xl text-slate-400">Workflow Creation </p>
             </div>
             <div class="grid grid-cols-12 gap-4 px-4 py-2">
                 <div class="col-span-6">
                     <div class="flex flex-col gap-2 mt-2">
-                        <label for="username">Work Flow</label>
+                        <label for="username">Workflow</label>
                         <Select v-model="this.selectedWorkflow" :options="this.workflowList" optionLabel="title"
                             placeholder="Select a workflow" checkmark :highlightOnSelect="false"
                             class="w-full md:w-56" />
@@ -33,7 +33,7 @@
             <div class="grid grid-cols-12  px-4 py-2">
                 <div class="col-span-12">
                     <div class="flex flex-col gap-2 mt-2">
-                        <Button :label="this.loading ? 'Loading...' : 'Submit'" severity="info"
+                        <Button :label="this.loading ? 'Loading...' : 'Submit'" class=" text-white"
                             @click="this.onClickSubmit()" />
                     </div>
                 </div>

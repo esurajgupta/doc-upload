@@ -4,6 +4,11 @@ export default {
   content: [],
   theme: {
     extend: {
+      colors:{
+        primary: {
+          DEFAULT: '#1e3a8a', // This is the hex code for blue-900
+        },
+      },
       boxShadow: {
         '3xl': '-11px 33px 35px -3px rgba(0,0,0,0.2)',
       }

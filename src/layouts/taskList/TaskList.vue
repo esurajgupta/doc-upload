@@ -8,31 +8,31 @@
                 @click="this.$router.push('/translanding/createTask')" />
         </div> -->
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl" style="width:-webkit-fill-available;">
-            <div class="flex">
+            <!-- <div class="flex">
                 <div class="grid grid-cols-12 gap-2 w-full">
                     <div class="col-span-6 flex items-center">
                         <p class="text-md font-medium text-slate-400"> Tasklist</p>
                     </div>
                     <div class="col-span-6 flex justify-end items-center">
-                        <!-- <IconField>
+                        <IconField>
                             <InputIcon class="pi pi-search" />
                             <InputText v-model="value1" placeholder="Search" size="small" />
-                        </IconField> -->
+                        </IconField>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div>
                 <ul
                     class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                     <li class="me-2" @click="this.onClickTab(0)">
                         <a href="#" aria-current="page"
-                            class="inline-block p-4 text-blue-600  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
-                            :class="[this.tabvalue === 0 ? 'active bg-gray-100  textBlue' : '']">Active</a>
+                            class="inline-block p-4 text-blue-800  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                            :class="[this.tabvalue === 0 ? 'active bg-gray-100' : '']">Active</a>
                     </li>
                     <li class="me-2" @click="this.onClickTab(1)">
                         <a href="#"
-                            class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-                            :class="[this.tabvalue === 1 ? 'active bg-gray-100  textBlue' : '']">Completed</a>
+                            class="inline-block p-4 text-blue-800  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                            :class="[this.tabvalue === 1 ? 'active bg-gray-100 ' : '']">Completed</a>
                     </li>
                 </ul>
             </div>
@@ -48,10 +48,10 @@
                 </Column>
                 <Column field="action" header="Action" dataType="boolean"
                     :class="[this.tabvalue === 1 ? 'hidden' : '']">
-                    <template #body="{ data }" class="">
+                    <template #body="{ data }">
                         <!-- <IconField> -->
                         <div class="h-full w-full flex justify-start items-center pl-4">
-                            <span class="pi pi-file-edit"
+                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem"
                                 @click="changeModalVisibilty(data?.entry?.id, data?.entry?.processId)"></span>
                         </div>
                         <!-- </IconField> -->
@@ -271,8 +271,19 @@ export default {
                     password: "admin"
                 }
             });
-            const finalArr = sortTaskRelatedDocs(userDocList?.data?.list?.entries, this.documents);
+            // const finalArr = sortTaskRelatedDocs(userDocList?.data?.list?.entries, this.documents); //not working
+            const finalArr = userDocList?.data?.list?.entries;
             this.selectedDocs = finalArr;
+            await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/${finalArr[0]?.entry?.id}/content`, {
+                auth: {
+                    username: "admin",
+                    password: "admin"
+                },
+                responseType: 'blob'
+            }).then((res) => {
+                const binaryString = res?.data;
+                this.pdfUrl = window.URL.createObjectURL(binaryString);
+            })
             console.log(finalArr);
 
             console.log(userDocList?.data?.list?.entries, this.documents);
