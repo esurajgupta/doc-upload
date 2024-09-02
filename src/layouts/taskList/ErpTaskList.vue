@@ -7,7 +7,22 @@
             })" />
         </div>
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
-            <DataTable :value="erpTaskList" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
+            <div>
+                <ul
+                    class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                    <li class="me-2" @click="this.onClickTab(0)">
+                        <a href="#" aria-current="page"
+                            class="inline-block p-4 text-blue-800  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                            :class="[this.tabvalue === 0 ? 'active bg-gray-100' : '']">Task</a>
+                    </li>
+                    <li class="me-2" @click="this.onClickTab(1)">
+                        <a href="#"
+                            class="inline-block p-4 text-blue-800  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                            :class="[this.tabvalue === 1 ? 'active bg-gray-100 ' : '']">History</a>
+                    </li>
+                </ul>
+            </div>
+            <DataTable v-if="tabvalue === 0" :value="erpTaskList" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]">
                 <template #empty> No data found. </template>
                 <Column field="instanceData.workflowName" header="Workflow Name">
@@ -31,9 +46,38 @@
                                 path: '/translanding/uploadDocument',
                                 state: { taskData: JSON.stringify(slotProps?.data) }
                             })"></span>
-                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem"
-                                v-if="this.userRole === 'admin'"
-                                @click="changeModalVisibilty(slotProps?.data, slotProps?.data)"></span>
+                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem" v-if="this.userRole === 'admin'"
+                                @click="changeModalVisibilty(slotProps)"></span>
+                        </div>
+                    </template>
+                </Column>
+            </DataTable>
+            <DataTable v-if="tabvalue === 1" :value="erpTaskHistory" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
+                :rowsPerPageOptions="[5, 10, 20, 50]">
+                <template #empty> No data found. </template>
+                <Column field="name" header="Workflow Name">
+                </Column>
+                <Column field="description" header="Description"></Column>
+                <Column field="created_date" header="Created Date">
+                    <template #body="slotProps">
+                        <div>{{ convertToReadableDate(slotProps.data.created_date) }}</div>
+                    </template>
+                </Column>
+                <Column field="assignee" header="Assignee"></Column>
+                <Column field="statusId" header="Status">
+                    <template #body="slotProps">
+                        <div>{{ getTaskNameById(slotProps.data.statusId) }}</div>
+                    </template>
+                </Column>
+                <Column header="Action">
+                    <template #body="slotProps">
+                        <div class="h-full w-full flex justify-start items-center pl-4">
+                            <span class="pi pi-cloud-upload" v-if="this.userRole === 'user'" @click=" this.$router.push({
+                                path: '/translanding/uploadDocument',
+                                state: { taskData: JSON.stringify(slotProps?.data) }
+                            })"></span>
+                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem" v-if="this.userRole === 'admin'"
+                                @click="changeModalVisibilty(slotProps)"></span>
                         </div>
                     </template>
                 </Column>
@@ -130,6 +174,7 @@ export default {
     data() {
         return {
             erpTaskList: [],
+            erpTaskHistory:[],
             userRole: "",
             userName: "",
             userToken: "",
@@ -145,22 +190,39 @@ export default {
             selectedDoc: null,
             copied: false,
             loading: false,
+            tabvalue: 0,
+
 
         };
     },
     methods: {
+       async onClickTab(val) {
+            this.tabvalue = val;
+            if (this.tabvalue === 0) {
+                const erpTaskData = await httpClient.get(endpoints.erpTaskList)
+            const taskList = erpTaskData.data
+            console.log(taskList, "erpTaskData.data")
+
+            taskList.forEach((instanceDatas) => {
+                if (instanceDatas.instanceData)
+                    instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
+            })
+            taskList.forEach((instanceDatas) => {
+                if (instanceDatas.instanceData.data)
+                    instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
+            })
+
+            console.log(taskList, "parsedData")
+            const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
+            this.erpTaskList = filteredTaskList
+            } else {
+                //history api call
+                const erpTaskData = await httpClient.get(endpoints.erpTaskHistory)
+                this.erpTaskHistory = erpTaskData.data
+            console.log(erpTaskData.data, "erpTaskData.data")
+            }
+        },
         async getErpTaskList() {
-            // const erpTaskData = await httpClient.get(endpoints.erpTaskList)
-            // if (this.userRole != constant.adminUserName) {
-            //     const filteredData = erpTaskData.data.filter((data) => {
-            //         if (data?.assignee && data.assignee === this.userName) {
-            //             return data;
-            //         }
-            //     })
-            //     this.erpTaskList = filteredData
-            //     console.log(this.erpTaskList, 'erptasklist')
-            // }
-            // else { this.erpTaskList = erpTaskData.data }
             const erpTaskData = await httpClient.get(endpoints.erpTaskList)
             const taskList = erpTaskData.data
             console.log(taskList, "erpTaskData.data")
@@ -202,6 +264,25 @@ export default {
             }
         },
         async onClickReject() {
+
+            const taskPayload =   {
+  task_id: "532391a6-baa7-4acb-b265-cc5cd8e1edc3",
+  internal_task_id: "node_68c79b9e-3cd4-4d4d-b258-051b976b50b6",
+  task_action: "approve",
+  tenant_id: "102101",
+  createdBy: "selva",
+  instance_data: {
+    "email": "vignesh.saravanan@tekafforde.com",
+    "qid": "123456789",
+    "gender": "male",
+    "age": "27",
+    "spouse_qid": "212345678",
+    "status": "pending",
+    "witness1_qid": "312345678",
+    "witness2_qid": "412345678"
+  }
+}
+
             await approveDocument(payload, (res) => {
                 this.visible = !this.visible;
                 if (res && res?.status && res.status === 200) {
@@ -220,6 +301,23 @@ export default {
         },
         async onClickAccept() {
 
+            const taskPayload =   {
+  task_id: "532391a6-baa7-4acb-b265-cc5cd8e1edc3",
+  internal_task_id: "node_68c79b9e-3cd4-4d4d-b258-051b976b50b6",
+  task_action: "approve",
+  tenant_id: "102101",
+  createdBy: "selva",
+  instance_data: {
+    "email": "vignesh.saravanan@tekafforde.com",
+    "qid": "123456789",
+    "gender": "male",
+    "age": "27",
+    "spouse_qid": "212345678",
+    "status": "pending",
+    "witness1_qid": "312345678",
+    "witness2_qid": "412345678"
+  }
+}
             const erpPayload = {
                 ...constant.erpWorkflowTempPayload,
                 email: constant.vendorEmail,
@@ -235,9 +333,8 @@ export default {
                 this.getAlfrescoTask();
             });
         },
-        async changeModalVisibilty(singleData, processId) {
-            console.log(taskId, "taskId");
-            this.selectedInstance = singleData;
+        async changeModalVisibilty(slotProps) {
+            this.selectedInstance = slotProps?.data?.singleData;
             this.visible = !this.visible;
             this.processId = processId;
             this.getFiles(processId);
