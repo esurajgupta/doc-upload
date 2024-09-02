@@ -35,6 +35,7 @@ import { parserXML } from '@/constants/functions';
 import router from '@/router';
 import { httpClient } from '@/services/interceptor';
 import { updateERPWorkflow } from '@/services/task-creation';
+import { getTaskForInstance } from '@/services/task-list';
 
 export default {
     name: "UploadDocs",
@@ -46,7 +47,7 @@ export default {
         return {
             docList: ref([]),
             taskId: window.history.state.taskId,
-            taskData: window.history.state.taskdata,
+            taskData: JSON.parse(window.history.state.taskData),
             userToken: "",
             searchParams: new URLSearchParams(window.location.search)
         }
@@ -77,10 +78,16 @@ export default {
             })
         },
         async onClickUpload() {
+            console.log(this.taskData, "onclickupload");
+            await getTaskForInstance(this.taskData?.processInstanceId, (res) => {
+                console.log(res, "snle dada");
+
+            });
             const payload = new FormData;
             payload.append("fileData", this.docList[0]);
             payload.append("name", this.docList[0]?.name);
             payload.append("nodeType", "cm:content");
+            payload.append("overwrite", true);
             await uploadDocuments({
                 alf_ticket: this.userToken
             }, payload, (res) => {
@@ -135,11 +142,22 @@ export default {
         //     });
         // }
         async startProcess(docDetails) {
+            let singleInstace = null;
+            await getTaskForInstance(this.taskData?.processInstanceId, (res) => {
+                console.log(res);
+                singleInstace = res;
+            });
+            const instance_daata = this.taskData.instanceData;
+            delete instance_daata.header;
             const tempPayload = {
-                ...constant.erpWorkflowTempPayload,
-                assignee: constant.vendorEmail,
-                instanceData: {
-                    ...this.taskData,
+                tenant_id: constant.erpWorkflowTempPayload.tenant_id,
+                createdBy: constant.erpWorkflowTempPayload.createdBy,
+                task_id: singleInstace.taskId,
+                internal_task_id: singleInstace.internalTaskId,
+                task_action: "approve",
+                instance_data: {
+                    ...instance_daata,
+                    status: "pending",
                     documentId: docDetails?.entry?.id,
                     documentName: docDetails?.entry?.name,
                     documentParentId: docDetails?.entry?.parentId,

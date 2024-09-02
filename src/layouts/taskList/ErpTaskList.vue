@@ -32,6 +32,7 @@
                                 state: { taskData: JSON.stringify(slotProps?.data) }
                             })"></span>
                             <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem"
+                                v-if="this.userRole === 'admin'"
                                 @click="changeModalVisibilty(slotProps?.data, slotProps?.data)"></span>
                         </div>
                     </template>

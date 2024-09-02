@@ -17,7 +17,7 @@ const endpoints = {
         fetchDocsLinkedWithTask: "/api/v1/fetchDocument/",
         getActiveTaskList: "/alfresco/api/-default-/public/workflow/versions/1/tasks?state=completed",
         createERPWorkflow: "/api/workflowApis/initiateWorkflow",
-        updateERPWorkflow: "/api/workflowApis/updateWorkflow",
+        updateERPWorkflow: "/api/workflowApis/updateTask",
         erpTaskList: "/api/processInstances",
         getTaskByInstanceID: "/api/userTasks",
 };

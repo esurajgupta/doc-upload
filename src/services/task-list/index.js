@@ -48,6 +48,8 @@ export const getTaskForInstance = async (payload, callback) => {
     await httpClient.get(endpoints.getTaskByInstanceID).then((res) => {
         console.log(res?.data);
         const response = res?.data.find((item) => item?.processInstanceId === payload);
+        console.log(payload, response);
+
         callback(response);
     }).catch((err) => {
         callback(err);
