@@ -51,3 +51,13 @@ export const createTaskInERP = async (payload, callback) => {
         callback(err)
     })
 };
+
+export const updateERPWorkflow = async (payload, callback) => {
+    await httpClient.put("endpoints.", payload).then((res) => {
+        console.log(res);
+        callback(res.data)
+    }).catch((err) => {
+        console.log(err, "error");
+        callback(err)
+    })
+};

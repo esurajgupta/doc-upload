@@ -45,14 +45,13 @@ export default {
         return {
             docList: ref([]),
             taskId: window.history.state.taskId,
+
             userToken: "",
             searchParams: new URLSearchParams(window.location.search)
         }
     },
     methods: {
         storeCollectedData(value) {
-            console.log(value, "testing");
-
             const val = this.docList
             if (val.length > 0) {
                 val.splice(0, 1, value);
@@ -63,14 +62,8 @@ export default {
 
         },
         removeSelectedDocument(id) {
-            console.log(id, "checking id");
-
             const arr = this.docList;
             arr.splice(id, 1);
-            console.log(arr, "checking temp arr");
-            console.log(this.docList, "checking doclist");
-
-
         },
         async generateToken() {
             const userName = localStorage.getItem("userName");
@@ -91,12 +84,7 @@ export default {
             await uploadDocuments({
                 alf_ticket: this.userToken
             }, payload, (res) => {
-                console.log(res);
-                console.log(res?.data?.error?.briefSummary);
-
                 if (res && res?.status && res.status !== 201) {
-                    console.log("work");
-
                     this.$toast.add({ severity: 'error', detail: "error occured", life: 3000 });
                     return
                 }
@@ -117,7 +105,6 @@ export default {
                 if (JSON.stringify(res).includes("AxiosError")) {
                     this.$toast.add({ severity: 'danger', detail: 'Error occurred while initiating workflow', life: 3000 });
                 } else {
-                    // this.$toast.add({ severity: 'success', detail: 'Workflow initiated sucessfully', life: 3000 });
                     httpClient.get("/api/v1/workFlowInitiate/" + `${localStorage.getItem("userName")}/${this.taskId}/${res?.entry?.id}`)
                     const tempPayload = {
                         taskId: res?.entry?.id,
@@ -130,7 +117,6 @@ export default {
                             this.$toast.add({ severity: 'success', detail: 'Workflow updated successfully', life: 3000 });
                         }
                     })
-
                     const docsInfoPayload = {
                         "taskId": parseInt(this.taskId),
                         "alferscoId": parseInt(res?.entry?.id),
@@ -152,11 +138,6 @@ export default {
     mounted() {
         this.generateToken();
         console.log(window.history.state);
-
-
-    },
-    updated() {
-        console.log(this.docList, "testst");
     }
 }
 </script>

@@ -44,7 +44,7 @@
 </template>
 <script>
 import { constant } from "@/constants/constants";
-import { createNewTask, createTaskInERP, getUserList, getWorkflowList } from "@/services/task-creation";
+import { createNewTask, createTaskInERP, getUserList, getWorkflowList, updateERPWorkflow } from "@/services/task-creation";
 export default {
     data() {
         return {
@@ -95,9 +95,10 @@ export default {
                             referenceId: "i121",
                             userName: this.selectedUser?.userName,
                             email: this.selectedUser?.email,
-                            templateData: JSON.stringify({
+                            templateData: {
                                 userName: this.selectedUser?.userName,
-                            })
+                                redirectURL: "http://localhost:5173"
+                            }
                         }]),
                     }
                 };
@@ -116,6 +117,12 @@ export default {
                 console.log(res, "ERP API");
                 this.$toast.add({ severity: 'success', detail: 'Workflow Initiated  Successfully', life: 3000 })
             });
+        },
+
+        async updateERPTask(payload) {
+            await updateERPWorkflow(payload, (res) => {
+
+            });
         }
     },
     mounted() {
@@ -124,9 +131,7 @@ export default {
     },
     updated() {
         console.log(this.selectedUser, this.selectedWorkflow, this.description, "testing");
-
     }
-
 }
 </script>
 
