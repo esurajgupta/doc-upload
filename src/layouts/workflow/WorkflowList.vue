@@ -14,8 +14,8 @@
                     </div>
                 </div>
             </div> -->
-            <DataTable :value="workflow" stripedRows tableStyle="min-width: 50rem" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]">
-                <template #empty> No data found. </template>
+            <DataTable :lazy="true" :loading="loading" :value="workflow" stripedRows tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]">
+                <template #empty v-if="workflow.length==0 && !loading"> No data found. </template>
                 <Column field="workflowType.title" header="Workflow Type"></Column>
                 <Column field="description" header="Description"></Column>
                 <Column field="userId.userName" header="Assigned User"></Column>
@@ -48,7 +48,8 @@ export default {
         return {
             workflow: [],
             userType: localStorage.getItem('role'),
-            userName: localStorage.getItem('userName')
+            userName: localStorage.getItem('userName'),
+            loading: false,
         }
     },
     methods: {
@@ -56,8 +57,10 @@ export default {
             await fetchDBTaskList((res) => {
                 let tempArr = res.filter((item) => item.userId.userName === localStorage.getItem("userName"));
                 if (localStorage.getItem("role") === constant.adminUserName) {
+                    this.loading = false;
                     this.workflow = res;
                 } else {
+                    this.loading = false;
                     this.workflow = tempArr;
                 }
             })
@@ -75,8 +78,10 @@ export default {
     },
     mounted() {
         console.log(this.userType);
-
-        this.fetchWorkFlowData();
+        this.loading = true;
+        setTimeout(() => {
+            this.fetchWorkFlowData();
+        }, 1000);
     }
 }
 </script>

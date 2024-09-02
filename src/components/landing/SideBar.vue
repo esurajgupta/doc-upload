@@ -86,6 +86,9 @@ export default {
         menuListItem() {
             const menuList = [
                 { "menuUrl": "/translanding/workflowList", "menuIcon": "pi pi-sitemap", "menuName": "Workflow", "parentmenuid": null, "isActive": false, "children": [] },
+               
+                    { "menuUrl": "/translanding/erpTaskList", "menuIcon": "pi pi-clone", "menuName": "Erp Tasks", "parentmenuid": null, "isActive": false, "children": [] }
+            
                 // { "menuUrl": "/translanding/user", "menuIcon": "user", "menuName": "User", "parentmenuid": null, "isActive": false, "children": [] },
             ]
             if (localStorage.getItem("role") === constant.adminUserName) {
@@ -95,9 +98,7 @@ export default {
                 // menuList.push(
                 //     { "menuUrl": "/translanding/myFiles", "menuIcon": "pi pi-folder-open", "menuName": "My Files", "parentmenuid": null, "isActive": false, "children": [] }
                 // );
-                // menuList.push(
-                //     { "menuUrl": "/translanding/erpTaskList", "menuIcon": "pi pi-clone", "menuName": "Erp Tasks", "parentmenuid": null, "isActive": false, "children": [] }
-                // );
+                
 
             };
             this.menus = menuList

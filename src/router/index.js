@@ -66,18 +66,18 @@ const router = createRouter({
             }]
           }
         },
-        // {
-        //   path:'ErpTaskList',
-        //   component: ErpTaskList,
-        //   meta: {
-        //     breadcrumb: [{
-        //       label: "ErpTaskList"
-        //     }, {
-        //       label: "Erp Task List",
-        //       route: "/translanding/ErpTaskList"
-        //     }]
-        //   }
-        // },
+        {
+          path:'ErpTaskList',
+          component: ErpTaskList,
+          meta: {
+            breadcrumb: [{
+              label: "ErpTaskList"
+            }, {
+              label: "Erp Task List",
+              route: "/translanding/ErpTaskList"
+            }]
+          }
+        },
         // {
         //   path: 'myFiles',
         //   name: 'myFiles',

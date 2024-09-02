@@ -20,5 +20,19 @@ export const constant = {
         approved: "1008",
         assigned: "1009",
         unAssigned: "1010",
+    },
+    taskStatusId: {
+            1001: "Initiated",
+            1002: "Completed",
+            1003: "Failed",
+            1004: "Active",
+            1005: "Inactive",
+            1006: "Claimed",
+            1007: "Rejected",
+            1008: "Approved",
+            1009: "Assigned",
+            1010: "UnAssigned"
+        
+        
     }
 }

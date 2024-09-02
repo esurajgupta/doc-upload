@@ -36,9 +36,9 @@
                     </li>
                 </ul>
             </div>
-            <DataTable :value="filteredTasks" stripedRows tableStyle="min-width: 50rem" paginator :rows="5"
+            <DataTable :lazy="true" :loading="loading" :value="filteredTasks" stripedRows tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]">
-                <template #empty> No data found. </template>
+                <template #empty v-if="filteredTasks.length===0 && !loading"> No data found. </template>
                 <Column field="entry.name" header="Task Name"></Column>
                 <Column field="entry.description" header="Task Description"></Column>
                 <Column field="entry.activityDefinitionId" header="Status"></Column>
@@ -167,6 +167,8 @@ export default {
             filteredTasks: [],
             selectedDoc: null,
             copied: false,
+            loading: false,
+
         }
     },
     methods: {
@@ -274,8 +276,10 @@ export default {
             await getAlfrescoTaskList((res) => {
                 this.tasks = res?.list?.entries;
                 if (this.tabvalue === 0) {
+                    this.loading = false;
                     this.filteredTasks = this.tasks.filter((item) => item?.entry?.activityDefinitionId === constant.reviewId)
                 } else {
+                    this.loading = false;
                     this.filteredTasks = this.tasks.filter((item) => item?.entry?.activityDefinitionId !== constant.reviewId)
                 }
                 console.log(this.tasks);
@@ -366,7 +370,12 @@ export default {
         // this.getTaskList();
         console.log(constant, "fdsfas");
 
-        this.getAlfrescoTask();
+        // this.getAlfrescoTask();
+        
+        this.loading = true;
+        setTimeout(() => {
+            this.getAlfrescoTask();
+        }, 1000);
         getTokenForUser({
             userName: "admin",
             password: "admin"

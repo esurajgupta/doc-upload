@@ -98,6 +98,7 @@ export default {
                     localStorage.setItem("role", "admin");
                 } else {
                     localStorage.setItem("role", "user");
+                    localStorage.setItem("userName",this.email)
                 }
                 this.$router.push("/translanding");
                 // axios.post("/user/loginAPI", payload, {})
