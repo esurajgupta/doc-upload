@@ -10,14 +10,15 @@
             <DataTable :value="erpTaskList" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]">
                 <template #empty> No data found. </template>
-                <Column field="name" header="Workflow Name"></Column>
-                <Column field="description" header="Description"></Column>
+                <Column field="instanceData.workflowName" header="Workflow Name">
+                </Column>
+                <Column field="instanceData.description" header="Description"></Column>
                 <Column field="created_date" header="Created Date">
                     <template #body="slotProps">
                         <div>{{ convertToReadableDate(slotProps.data.created_date) }}</div>
                     </template>
                 </Column>
-                <Column field="assignee" header="Assignee"></Column>
+                <Column field="instanceData.userName" header="Assignee"></Column>
                 <Column field="statusId" header="Status">
                     <template #body="slotProps">
                         <div>{{ getTaskNameById(slotProps.data.statusId) }}</div>
@@ -159,25 +160,21 @@ export default {
             // }
             // else { this.erpTaskList = erpTaskData.data }
             const erpTaskData = await httpClient.get(endpoints.erpTaskList)
-            console.log(erpTaskData, "erpTaskData")
+            const taskList = erpTaskData.data
+            console.log(taskList, "erpTaskData.data")
 
-            console.log(erpTaskData.data, "erpTaskData.data")
-
-            const parsedData = erpTaskData.data.map((instanceDatas) => {
-                return JSON.parse(instanceDatas.instanceData)
+            taskList.forEach((instanceDatas) => {
+                if(instanceDatas.instanceData)
+                instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
+            })
+            taskList.forEach((instanceDatas) => {
+                if(instanceDatas.instanceData.data)
+                instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
             })
 
-            console.log(parsedData, "parsedData")
-
-            parsedData.forEach(item => {
-                if (item.templateData) {
-                    item.templateData = JSON.parse(item.templateData);
-                }
-            });
-
-            console.log(parsedData, "final parsedData")
-
-
+            console.log(taskList, "parsedData")
+            const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
+            this.erpTaskList = filteredTaskList
             this.loading = false
         },
         getTaskNameById(id) {
