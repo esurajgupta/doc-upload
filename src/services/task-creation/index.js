@@ -41,3 +41,13 @@ export const fetchTaskDocuments = async (id, callback) => {
         callback(err)
     })
 }
+
+export const createTaskInERP = async (payload, callback) => {
+    await httpClient.post(endpoints.createERPWorkflow, payload).then((res) => {
+        console.log(res);
+        callback(res.data)
+    }).catch((err) => {
+        console.log(err, "error");
+        callback(err)
+    })
+};

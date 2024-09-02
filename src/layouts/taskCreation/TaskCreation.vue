@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-span-6">
                     <div class="flex flex-col gap-2 mt-2">
-                        <label for="username">User</label>
+                        <label for="username">Username</label>
                         <Select v-model="this.selectedUser" :options="this.userList" optionLabel="userName"
                             placeholder="Select a user" checkmark :highlightOnSelect="false" class="w-full md:w-56" />
                     </div>
@@ -43,7 +43,8 @@
     <Toast />
 </template>
 <script>
-import { createNewTask, getUserList, getWorkflowList } from "@/services/task-creation";
+import { constant } from "@/constants/constants";
+import { createNewTask, createTaskInERP, getUserList, getWorkflowList } from "@/services/task-creation";
 export default {
     data() {
         return {
@@ -76,6 +77,31 @@ export default {
             };
 
             await createNewTask(payload, (res) => {
+                const userData = {
+                    uesrName: this.selectedUser?.userName,
+                };
+                const payloadERP = {
+                    ...constant.erpWorkflowTempPayload,
+                    assignee: this.selectedUser?.emm,
+                    instance_data: {
+                        ...payload,
+                        userName: this.selectedUser?.userName,
+                        statusId: constant.taskStatus.initiated,
+                        email: this.selectedUser?.email,
+                        workflowName: this.selectedWorkflow?.title,
+                        userId: this.selectedUser.userName,
+                        data: JSON.stringify([{
+                            userId: this.selectedUser.userName,
+                            referenceId: "i121",
+                            userName: this.selectedUser?.userName,
+                            email: this.selectedUser?.email,
+                            templateData: JSON.stringify({
+                                userName: this.selectedUser?.userName,
+                            })
+                        }]),
+                    }
+                };
+                this.createERPWorkflow(payloadERP);
                 this.loading = false;
                 this.$toast.add({ severity: 'success', detail: 'Task Created Successfully', life: 3000 })
                 this.description = "";
@@ -84,6 +110,12 @@ export default {
                 setTimeout(() => this.$router.push("/translanding"), 1000);
             });
 
+        },
+        async createERPWorkflow(payload) {
+            await createTaskInERP(payload, (res) => {
+                console.log(res, "ERP API");
+                this.$toast.add({ severity: 'success', detail: 'Workflow Initiated  Successfully', life: 3000 })
+            });
         }
     },
     mounted() {

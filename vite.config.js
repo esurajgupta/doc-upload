@@ -17,12 +17,16 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      "^/api/v1/": {
+        target: "http://192.168.0.127:8087",
+        pathReWrite: { '^/api/v1': '/api/v1' }
+      },
       "^/api/": {
-        target: "http://192.168.0.126:8087",
-        pathReWrite: { '^/api': '/api' }
+        target: "http://localhost:3000",
+        pathReWrite: { '^/api': '/api' },
       },
       "^/alfresco/": {
-        target: "http://127.0.0.1:8080",
+        target: "http://192.168.0.109:8080",
         pathReWrite: { '^/alfresco': '/alfresco' }
       }
     }

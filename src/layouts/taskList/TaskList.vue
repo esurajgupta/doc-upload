@@ -305,8 +305,8 @@ export default {
                     password: "admin"
                 }
             });
-            // const finalArr = sortTaskRelatedDocs(userDocList?.data?.list?.entries, this.documents); //not working
-            const finalArr = userDocList?.data?.list?.entries;
+            const finalArr = sortTaskRelatedDocs(userDocList?.data?.list?.entries, this.documents); //not working
+            // const finalArr = userDocList?.data?.list?.entries;
             this.selectedDocs = finalArr;
             this.selectedDoc = finalArr[0];
             await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/${finalArr[0]?.entry?.id}/content`, {
