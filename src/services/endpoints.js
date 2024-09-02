@@ -18,7 +18,8 @@ const endpoints = {
         getActiveTaskList: "/alfresco/api/-default-/public/workflow/versions/1/tasks?state=completed",
         createERPWorkflow: "/api/workflowApis/initiateWorkflow",
         updateERPWorkflow: "/api/workflowApis/updateWorkflow",
-        erpTaskList:"/api/processInstances",
+        erpTaskList: "/api/processInstances",
+        getTaskByInstanceID: "/api/userTasks",
 };
 
 export default endpoints;

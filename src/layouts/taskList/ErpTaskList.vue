@@ -29,10 +29,10 @@
                         <div class="h-full w-full flex justify-start items-center pl-4">
                             <span class="pi pi-cloud-upload" v-if="this.userRole === 'user'" @click=" this.$router.push({
                                 path: '/translanding/uploadDocument',
-                                state: { taskData: JSON.stringify(slotProps?.data)}
+                                state: { taskData: JSON.stringify(slotProps?.data) }
                             })"></span>
-                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem" v-if="this.userRole === 'admin'"
-                                @click="changeModalVisibilty(slotProps?.data?.entry?.id, slotProps?.data?.entry?.processId)"></span>
+                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem"
+                                @click="changeModalVisibilty(slotProps?.data, slotProps?.data)"></span>
                         </div>
                     </template>
                 </Column>
@@ -122,7 +122,7 @@ import { findUserFolderId, findUserId, sortTaskRelatedDocs } from '@/constants/f
 import endpoints from '@/services/endpoints';
 import { httpClient } from '@/services/interceptor';
 import { fetchTaskDocuments } from '@/services/task-creation';
-import { approveDocument, getAlfrescoTaskList } from '@/services/task-list';
+import { approveDocument, getAlfrescoTaskList, getTaskForInstance, onApproveDocument } from '@/services/task-list';
 import convertToReadableDate from '@/utils/dataUtils';
 
 export default {
@@ -134,7 +134,7 @@ export default {
             userToken: "",
             iframeUrl: `http://http://192.168.0.109:8080/content?alf_ticket=${this.userToken}`,
             visible: false,
-            selectedTask: null,
+            selectedInstance: null,
             processId: null,
             pdfUrl: null,
             documents: [],
@@ -165,12 +165,12 @@ export default {
             console.log(taskList, "erpTaskData.data")
 
             taskList.forEach((instanceDatas) => {
-                if(instanceDatas.instanceData)
-                instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
+                if (instanceDatas.instanceData)
+                    instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
             })
             taskList.forEach((instanceDatas) => {
-                if(instanceDatas.instanceData.data)
-                instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
+                if (instanceDatas.instanceData.data)
+                    instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
             })
 
             console.log(taskList, "parsedData")
@@ -201,20 +201,6 @@ export default {
             }
         },
         async onClickReject() {
-            const payload = {
-                payload: {
-                    "state": "completed",
-                    "variables": [
-                        {
-                            "name": "bpm_priority",
-                            "type": "d_int",
-                            "value": 1,
-                            "scope": "global"
-                        }
-                    ]
-                },
-                taskId: this.selectedTask
-            };
             await approveDocument(payload, (res) => {
                 this.visible = !this.visible;
                 if (res && res?.status && res.status === 200) {
@@ -232,39 +218,25 @@ export default {
             })
         },
         async onClickAccept() {
-            const payload = {
-                payload: {
-                    "state": "completed",
-                    "variables": [
-                        {
-                            "name": "bpm_priority",
-                            "type": "d_int",
-                            "value": 1,
-                            "scope": "global"
-                        }
-                    ]
-                },
-                taskId: this.selectedTask
-            };
-            await approveDocument(payload, (res) => {
-                this.visible = !this.visible;
-                if (res && res?.status && res.status === 200) {
-                    this.$toast.add({ severity: 'success', detail: "Task Approved successfully ", life: 3000 });
-                    httpClient.get("/api/v1/documentRejected/" + this.documents[0].split(",").pop() + `/${this.processId}`);
-                    this.getAlfrescoTask();
 
-
-                } else {
-                    this.$toast.add({ severity: 'error', detail: "error occured", life: 3000 });
+            const erpPayload = {
+                ...constant.erpWorkflowTempPayload,
+                email: constant.vendorEmail,
+                statusId: constant.taskStatus.approved,
+                instanceData: {
+                    ...this.selectedInstance
                 }
-
-                console.log(res);
-
-            })
+            };
+            await onApproveDocument(erpPayload, (res) => {
+                this.visible = !this.visible;
+                console.log(res, "approve document Data");
+                this.$toast.add({ severity: 'success', detail: "Task Approved successfully ", life: 3000 });
+                this.getAlfrescoTask();
+            });
         },
-        async changeModalVisibilty(taskId, processId) {
+        async changeModalVisibilty(singleData, processId) {
             console.log(taskId, "taskId");
-            this.selectedTask = taskId;
+            this.selectedInstance = singleData;
             this.visible = !this.visible;
             this.processId = processId;
             this.getFiles(processId);
@@ -287,11 +259,8 @@ export default {
 
             });
         },
-        async getFiles(taskId) {
-            await fetchTaskDocuments(taskId, (res) => {
-                // const finalArr = sortTaskRelatedDocs(docsList, res);
-                this.documents = res;
-            });
+        async getFiles(documentId) {
+
             const docsList = await httpClient.get(`${endpoints.getDocuments}`, {
                 auth: {
                     username: localStorage.getItem("userName"),
@@ -304,7 +273,7 @@ export default {
                     password: "admin"
                 }
             });
-            const userDocList = await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/` + findUserId(folderList?.data?.list?.entries, this.documents[0].split(",").pop()) + "/children", {
+            const userDocList = await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/` + findUserId(folderList?.data?.list?.entries, documentId) + "/children", {
                 auth: {
                     username: localStorage.getItem("userName"),
                     password: "admin"

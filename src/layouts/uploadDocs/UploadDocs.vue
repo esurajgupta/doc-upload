@@ -34,6 +34,7 @@ import { constant } from '@/constants/constants';
 import { parserXML } from '@/constants/functions';
 import router from '@/router';
 import { httpClient } from '@/services/interceptor';
+import { updateERPWorkflow } from '@/services/task-creation';
 
 export default {
     name: "UploadDocs",
@@ -45,7 +46,7 @@ export default {
         return {
             docList: ref([]),
             taskId: window.history.state.taskId,
-
+            taskData: window.history.state.taskdata,
             userToken: "",
             searchParams: new URLSearchParams(window.location.search)
         }
@@ -80,7 +81,6 @@ export default {
             payload.append("fileData", this.docList[0]);
             payload.append("name", this.docList[0]?.name);
             payload.append("nodeType", "cm:content");
-
             await uploadDocuments({
                 alf_ticket: this.userToken
             }, payload, (res) => {
@@ -89,49 +89,67 @@ export default {
                     return
                 }
                 this.$toast.add({ severity: 'success', detail: 'Uploaded Successfully', life: 3000 });
-                httpClient.get("/api/v1/documentUploaded/" + localStorage.getItem("userName"));
+                // httpClient.get("/api/v1/documentUploaded/" + localStorage.getItem("userName"));
                 this.startProcess(res?.data);
             });
         },
+        // async startProcess(docDetails) {
+        //     const payload = {
+        //         "processDefinitionKey": "activitiReview",
+        //         "variables":
+        //         {
+        //             "bpm_assignee": "admin"
+        //         }
+        //     };
+        //     await createNewProcess(payload, async (res) => {
+        //         if (JSON.stringify(res).includes("AxiosError")) {
+        //             this.$toast.add({ severity: 'danger', detail: 'Error occurred while initiating workflow', life: 3000 });
+        //         } else {
+        //             httpClient.get("/api/v1/workFlowInitiate/" + `${localStorage.getItem("userName")}/${this.taskId}/${res?.entry?.id}`)
+        //             const tempPayload = {
+        //                 taskId: res?.entry?.id,
+        //                 id: `workspace://SpacesStore/${docDetails?.entry?.id}`
+        //             }
+        //             await assignDocToProcess(tempPayload, (res) => {
+        //                 if (JSON.stringify(res).includes("AxiosError")) {
+        //                     this.$toast.add({ severity: 'danger', detail: 'Error occurred while adding document', life: 3000 });
+        //                 } else {
+        //                     this.$toast.add({ severity: 'success', detail: 'Workflow updated successfully', life: 3000 });
+        //                 }
+        //             })
+        //             const docsInfoPayload = {
+        //                 "taskId": parseInt(this.taskId),
+        //                 "alferscoId": parseInt(res?.entry?.id),
+        //                 userName: localStorage.getItem("userName"),
+        //                 "documents": [
+        //                     {
+        //                         "uplodedDocumentId": docDetails?.entry?.id,
+        //                         "documentName": docDetails?.entry?.name
+        //                     },
+        //                 ]
+        //             };
+        //             await uploadDocsInfoToDB(docsInfoPayload, (res) => {
+        //                 setTimeout(() => router.push("/translanding/workflowList"), 1000);
+        //             });
+        //         }
+        //     });
+        // }
         async startProcess(docDetails) {
-            const payload = {
-                "processDefinitionKey": "activitiReview",
-                "variables":
-                {
-                    "bpm_assignee": "admin"
+            const tempPayload = {
+                ...constant.erpWorkflowTempPayload,
+                assignee: constant.vendorEmail,
+                instanceData: {
+                    ...this.taskData,
+                    documentId: docDetails?.entry?.id,
+                    documentName: docDetails?.entry?.name,
+                    documentParentId: docDetails?.entry?.parentId,
+                    statusId: constant.taskStatus.active
                 }
             };
-            await createNewProcess(payload, async (res) => {
-                if (JSON.stringify(res).includes("AxiosError")) {
-                    this.$toast.add({ severity: 'danger', detail: 'Error occurred while initiating workflow', life: 3000 });
-                } else {
-                    httpClient.get("/api/v1/workFlowInitiate/" + `${localStorage.getItem("userName")}/${this.taskId}/${res?.entry?.id}`)
-                    const tempPayload = {
-                        taskId: res?.entry?.id,
-                        id: `workspace://SpacesStore/${docDetails?.entry?.id}`
-                    }
-                    await assignDocToProcess(tempPayload, (res) => {
-                        if (JSON.stringify(res).includes("AxiosError")) {
-                            this.$toast.add({ severity: 'danger', detail: 'Error occurred while adding document', life: 3000 });
-                        } else {
-                            this.$toast.add({ severity: 'success', detail: 'Workflow updated successfully', life: 3000 });
-                        }
-                    })
-                    const docsInfoPayload = {
-                        "taskId": parseInt(this.taskId),
-                        "alferscoId": parseInt(res?.entry?.id),
-                        userName: localStorage.getItem("userName"),
-                        "documents": [
-                            {
-                                "uplodedDocumentId": docDetails?.entry?.id,
-                                "documentName": docDetails?.entry?.name
-                            },
-                        ]
-                    };
-                    await uploadDocsInfoToDB(docsInfoPayload, (res) => {
-                        setTimeout(() => router.push("/translanding/workflowList"), 1000);
-                    });
-                }
+            updateERPWorkflow(tempPayload, (res) => {
+                console.log(res, "gokul logging");
+                this.$toast.add({ severity: "successs", detail: "workflow updated successfully" });
+                setTimeout(() => router.push("/translanding/workflowList"), 1000);
             });
         }
     },

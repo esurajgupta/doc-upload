@@ -36,9 +36,10 @@
                     </li>
                 </ul>
             </div>
-            <DataTable :lazy="true" :loading="loading" :value="filteredTasks" stripedRows tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
+            <DataTable :lazy="true" :loading="loading" :value="filteredTasks" stripedRows
+                tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]">
-                <template #empty v-if="filteredTasks.length===0 && !loading"> No data found. </template>
+                <template #empty v-if="filteredTasks.length === 0 && !loading"> No data found. </template>
                 <Column field="entry.name" header="Task Name"></Column>
                 <Column field="entry.description" header="Task Description"></Column>
                 <Column field="entry.activityDefinitionId" header="Status"></Column>
@@ -231,20 +232,7 @@ export default {
             })
         },
         async onClickAccept() {
-            const payload = {
-                payload: {
-                    "state": "completed",
-                    "variables": [
-                        {
-                            "name": "bpm_priority",
-                            "type": "d_int",
-                            "value": 1,
-                            "scope": "global"
-                        }
-                    ]
-                },
-                taskId: this.selectedTask
-            };
+
             await approveDocument(payload, (res) => {
                 this.visible = !this.visible;
                 if (res && res?.status && res.status === 200) {
@@ -371,7 +359,7 @@ export default {
         console.log(constant, "fdsfas");
 
         // this.getAlfrescoTask();
-        
+
         this.loading = true;
         setTimeout(() => {
             this.getAlfrescoTask();

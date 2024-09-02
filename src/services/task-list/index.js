@@ -34,3 +34,22 @@ export const fetchDBTaskList = async (callback) => {
         callback(err);
     })
 };
+
+
+export const onApproveDocument = async (payload, callback) => {
+    await httpClient.post(endpoints.updateERPWorkflow, payload).then((res) => {
+        callback(res?.data);
+    }).catch((err) => {
+        callback(err);
+    })
+}
+
+export const getTaskForInstance = async (payload, callback) => {
+    await httpClient.get(endpoints.getTaskByInstanceID).then((res) => {
+        console.log(res?.data);
+        const response = res?.data.find((item) => item?.processInstanceId === payload);
+        callback(response);
+    }).catch((err) => {
+        callback(err);
+    })
+}
