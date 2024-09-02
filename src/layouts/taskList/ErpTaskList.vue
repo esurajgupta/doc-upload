@@ -29,8 +29,9 @@
                         <div class="h-full w-full flex justify-start items-center pl-4">
                             <span class="pi pi-cloud-upload" v-if="this.userRole === 'user'" @click=" this.$router.push({
                                 path: '/translanding/uploadDocument',
+                                state: { taskData: JSON.stringify(slotProps?.data)}
                             })"></span>
-                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem"
+                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem" v-if="this.userRole === 'admin'"
                                 @click="changeModalVisibilty(slotProps?.data?.entry?.id, slotProps?.data?.entry?.processId)"></span>
                         </div>
                     </template>
