@@ -40,23 +40,23 @@ const router = createRouter({
             }]
           }
         },
-        {
-          path: 'taskList',
-          name: 'taskList',
-          component: TaskList,
-          meta: {
-            breadcrumb: [{
-              label: "TaskList"
-            }, {
-              label: "Task List",
-              route: "/translanding/taskList"
-            }]
-          }
-        },
+        // {
+        //   path: 'taskList',
+        //   name: 'taskList',
+        //   component: TaskList,
+        //   meta: {
+        //     breadcrumb: [{
+        //       label: "TaskList"
+        //     }, {
+        //       label: "Task List",
+        //       route: "/translanding/taskList"
+        //     }]
+        //   }
+        // },
         {
           path: 'workflowlist',
           name: 'workflowlist',
-          component: WorkflowList,
+          component: ErpTaskList,
           meta: {
             breadcrumb: [{
               label: "Workflow List"
@@ -66,18 +66,18 @@ const router = createRouter({
             }]
           }
         },
-        {
-          path:'ErpTaskList',
-          component: ErpTaskList,
-          meta: {
-            breadcrumb: [{
-              label: "ErpTaskList"
-            }, {
-              label: "Erp Task List",
-              route: "/translanding/ErpTaskList"
-            }]
-          }
-        },
+        // {
+        //   path:'ErpTaskList',
+        //   component: ErpTaskList,
+        //   meta: {
+        //     breadcrumb: [{
+        //       label: "ErpTaskList"
+        //     }, {
+        //       label: "Erp Task List",
+        //       route: "/translanding/ErpTaskList"
+        //     }]
+        //   }
+        // },
         // {
         //   path: 'myFiles',
         //   name: 'myFiles',
