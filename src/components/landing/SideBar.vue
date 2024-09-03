@@ -90,6 +90,10 @@ export default {
                     // { "menuUrl": "/translanding/erpTaskList", "menuIcon": "pi pi-clone", "menuName": "Erp Tasks", "parentmenuid": null, "isActive": false, "children": [] }
             
                 // { "menuUrl": "/translanding/user", "menuIcon": "user", "menuName": "User", "parentmenuid": null, "isActive": false, "children": [] },
+                 
+                
+               
+                
             ]
             if (localStorage.getItem("role") === constant.adminUserName) {
                 // menuList.push(
@@ -101,6 +105,10 @@ export default {
                 
 
             };
+            if(localStorage.getItem("role") !== constant.adminUserName){
+                menuList.push(
+                { "menuUrl": "/translanding/myFiles", "menuIcon": "pi pi-folder-open", "menuName": "Document List", "parentmenuid": null, "isActive": false, "children": [] } );
+            }
             this.menus = menuList
         },
         generateColor() {

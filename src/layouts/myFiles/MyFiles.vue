@@ -1,77 +1,61 @@
 <template>
-
-    <div class="bgBlue h-full w-full flex  flex-col relative ">
-        <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl" style="width:-webkit-fill-available;">
-            <div class="card">
-                <DataTable v-model:expandedRows="expandedRows" :value="products" dataKey="id" tableStyle="min-width: 60rem">
-                    <template #header>
-                        <div class="flex flex-wrap justify-end gap-2">
-                            <Button text icon="pi pi-plus" label="Expand All" @click="expandAll" />
-                            <Button text icon="pi pi-minus" label="Collapse All" @click="collapseAll" />
-                        </div>
+    <div class="h-screen overflow-y-scroll w-full">
+        <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
+            <DataTable :value="documentlists" tableStyle="min-width: 50rem">
+                <template #empty>No records.</template>
+                <Column field="entry.name" header="File"></Column>
+                <Column field="entry.content.mimeType" header="Content Type"></Column>
+                <!-- <Column field="entry.content.mimeTypeName" header="Type Name"></Column> -->
+                <Column field="entry.content.sizeInBytes" header="Size">
+                    <template #body="slotProps">
+                        <div>{{ bytesToMB(slotProps.data.entry.content.sizeInBytes)+"MB" }}</div>
                     </template>
-                    <Column expander style="width: 5rem" />
-                    <Column field="name" header="Name"></Column>
-                    <Column field="code" header="Type"></Column>
-                    <Column field="rating" header="Size"></Column>
-                    <Column field="description" header="Description"></Column>
-                    <Column field="category" header="Action">
-                        <template #body="slotProps">
-                            <!-- <Rating :modelValue="slotProps.data.rating" readonly /> -->
-                        </template>
-                    </Column>
-                    <template #expansion="slotProps">
-                        <div class="p-4">
-                            <!-- <h5>Orders for {{ slotProps.data.name }}</h5> -->
-                            <DataTable :value="slotProps.data.orders">
-                                <Column field="id" header="Id" sortable></Column>
-                                <Column field="customer" header="Customer" sortable></Column>
-                                <Column field="date" header="Date" sortable></Column>
-                                <Column field="amount" header="Amount" sortable>
-                                </Column>
-                                <Column field="status" header="Status" sortable>
-                                </Column>
-                                <Column headerStyle="width:4rem">
-                                    <template #body>
-                                        <Button icon="pi pi-search" />
-                                    </template>
-                                </Column>
-                            </DataTable>
-                        </div>
+                </Column>
+                <Column field="entry.createdAt" header="Created Date">
+                    <template #body="slotProps">
+                        <div>{{ convertToReadableDate(slotProps.data.entry.createdAt) }}</div>
                     </template>
-                </DataTable>
-                <Toast />
-            </div>
+                </Column>
+                <Column field="entry.createdByUser.displayName" header="Username"></Column>
+            </DataTable>
         </div>
     </div>
 </template>
+
 <script>
-import { FileService } from '@/services/file-list/fileList';
+import endpoints from '@/services/endpoints';
+import { httpClient } from '@/services/interceptor';
+import convertToReadableDate from '@/utils/dataUtils';
+
 export default {
-    name: "MyFiles",
-    components: {},
     data() {
         return {
-            products: null,
-            expandedRows: {}
+            documentlists: null
+        };
+    },
+    methods: {
+        bytesToMB(bytes) {
+            const megabytes = bytes / (1024 * 1024);
+            return megabytes.toFixed(2); // Returns the result rounded to 2 decimal places
+        },
+        convertToReadableDate,
+        async getAllDocuments() {
+            const docsList = await httpClient.get(`${endpoints.getDocuments}`, {
+                auth: {
+                    username: localStorage.getItem("userName"),
+                    password: "admin"
+                }
+            });
+            const unFilteredData = docsList.data.list.entries
+            console.log(unFilteredData, 'unFilteredData')
+            const filteredData = unFilteredData.filter((data) => data && data.entry && data.entry.isFile === true)
+            console.log(filteredData, "docsList");
+
+            this.documentlists = filteredData
         }
     },
-
-    methods: {
-        expandAll() {
-            this.expandedRows = this.products.reduce((acc, p) => (acc[p.id] = true) && acc, {});
-        },
-        collapseAll() {
-            this.expandedRows = null;
-        },
-        
-    },
     mounted() {
-    this.products = FileService.getProductsWithOrdersData();
-}
-
-}
-
-
+        this.getAllDocuments();
+    }
+};
 </script>
-<style scoped></style>
