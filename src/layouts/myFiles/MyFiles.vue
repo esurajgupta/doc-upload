@@ -34,7 +34,7 @@
                     <div class="">
                         <p class="text-lg font-medium text-slate-500">Version</p>
                     </div>
-                    <div class="flex">
+                    <div class="flex flex-col">
                         <span v-for="(data, index) in versionArray" :key="index">
                             {{ data }}
                         </span>
@@ -92,12 +92,12 @@ export default {
             return data.entry.id
              })
              console.log(versionids,"veriosnarr")
-            this.versionArray=versionids.join(',');
-           
+            this.versionArray=versionids.join(',\n').split('\n');
+             
 
-            const tempVersion = res.data?.list?.entries[0].entry.id
-            this.versionsList=tempVersion
-            console.log(this.versionsList, "versionArray")
+            // const tempVersion = res.data?.list?.entries[0].entry.id
+            // this.versionsList=tempVersion
+            // console.log(this.versionsList, "versionArray")
             await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/${documentId}/content`, {
                 auth: {
                     username: "admin",
