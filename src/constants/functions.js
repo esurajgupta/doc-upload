@@ -6,14 +6,15 @@ export const parserXML = (xml) => {
 }
 
 export const sortTaskRelatedDocs = (documents, documentId) => {
-    const splitedArr = documentId.map((item) => item.split(",").shift());
-    console.log(splitedArr, "split");
+    console.log(documents, documentId, "sorttaskrelatedDocs");
     let sortedDocs = [];
     documents.forEach((doc) => {
-        if (splitedArr.includes(doc?.entry?.id)) {
+        if (documentId === doc?.entry?.id) {
             sortedDocs.push(doc);
         }
     });
+    console.log(sortedDocs);
+
     return sortedDocs;
 };
 
@@ -28,6 +29,7 @@ export const findUserFolderId = (folders) => {
 };
 
 export const findUserId = (folders, userName) => {
+    console.log(folders, userName, "finduserId");
 
     const result = folders.find((item) => item.entry.name === userName);
     if (result) {

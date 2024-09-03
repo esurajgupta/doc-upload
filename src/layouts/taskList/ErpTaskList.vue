@@ -22,7 +22,7 @@
                     </li>
                 </ul>
             </div>
-            <DataTable v-if="tabvalue === 0" :value="erpTaskList" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
+            <DataTable :value="erpTaskList" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]">
                 <template #empty> No data found. </template>
                 <Column field="instanceData.workflowName" header="Workflow Name">
@@ -36,7 +36,7 @@
                 <Column field="instanceData.userName" header="Assignee"></Column>
                 <Column field="statusId" header="Status">
                     <template #body="slotProps">
-                        <div>{{ getTaskNameById(slotProps.data.statusId) }}</div>
+                        <div>{{ getTaskNameById(slotProps.data?.instanceData?.statusId) }}</div>
                     </template>
                 </Column>
                 <Column header="Action">
@@ -46,13 +46,17 @@
                                 path: '/translanding/uploadDocument',
                                 state: { taskData: JSON.stringify(slotProps?.data) }
                             })"></span>
-                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem" v-if="this.userRole === 'admin'"
-                                @click="changeModalVisibilty(slotProps)"></span>
+                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem"
+                                v-if="this.userRole === 'admin' && tabvalue === 0"
+                                @click="changeModalVisibilty(slotProps?.data)"></span>
+                            <span class="pi pi-eye text-primary" style="font-size: 1.3rem"
+                                v-if="this.userRole === 'admin' && tabvalue === 1"
+                                @click="changeModalVisibilty(slotProps?.data)"></span>
                         </div>
                     </template>
                 </Column>
             </DataTable>
-            <DataTable v-if="tabvalue === 1" :value="erpTaskHistory" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
+            <!-- <DataTable v-if="tabvalue === 1" :value="erpTaskHistory" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]">
                 <template #empty> No data found. </template>
                 <Column field="name" header="Workflow Name">
@@ -81,7 +85,7 @@
                         </div>
                     </template>
                 </Column>
-            </DataTable>
+            </DataTable> -->
         </div>
     </div>
     <Dialog v-model:visible="visible" header="Document Verification"
@@ -147,7 +151,7 @@
 
             </div>
         </div>
-        <div class="flex gap-2 justify-end mt-3">
+        <div class="flex gap-2 justify-end mt-3" v-if="tabvalue === 0">
             <div>
                 <Button label="Reject" severity="danger" size="small" style="font-size: small;"
                     @click="this.onClickReject()" />
@@ -166,7 +170,7 @@ import { constant } from '@/constants/constants';
 import { findUserFolderId, findUserId, sortTaskRelatedDocs } from '@/constants/functions';
 import endpoints from '@/services/endpoints';
 import { httpClient } from '@/services/interceptor';
-import { fetchTaskDocuments } from '@/services/task-creation';
+import { fetchTaskDocuments, updateIntanceData } from '@/services/task-creation';
 import { approveDocument, getAlfrescoTaskList, getTaskForInstance, onApproveDocument } from '@/services/task-list';
 import convertToReadableDate from '@/utils/dataUtils';
 
@@ -174,7 +178,7 @@ export default {
     data() {
         return {
             erpTaskList: [],
-            erpTaskHistory:[],
+            erpTaskHistory: [],
             userRole: "",
             userName: "",
             userToken: "",
@@ -191,35 +195,48 @@ export default {
             copied: false,
             loading: false,
             tabvalue: 0,
+            selectedProps: null
 
 
         };
     },
     methods: {
-       async onClickTab(val) {
+        async onClickTab(val) {
             this.tabvalue = val;
             if (this.tabvalue === 0) {
                 const erpTaskData = await httpClient.get(endpoints.erpTaskList)
-            const taskList = erpTaskData.data
-            console.log(taskList, "erpTaskData.data")
+                const taskList = erpTaskData.data
+                console.log(taskList, "erpTaskData.data")
 
-            taskList.forEach((instanceDatas) => {
-                if (instanceDatas.instanceData)
-                    instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
-            })
-            taskList.forEach((instanceDatas) => {
-                if (instanceDatas.instanceData.data)
-                    instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
-            })
+                taskList.forEach((instanceDatas) => {
+                    if (instanceDatas.instanceData)
+                        instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
+                })
+                // taskList.forEach((instanceDatas) => {
+                //     if (instanceDatas.instanceData.data)
+                //         instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
+                // })
 
-            console.log(taskList, "parsedData")
-            const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
-            this.erpTaskList = filteredTaskList
+                console.log(taskList, "parsedData")
+                const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
+                this.erpTaskList = filteredTaskList
             } else {
-                //history api call
                 const erpTaskData = await httpClient.get(endpoints.erpTaskHistory)
-                this.erpTaskHistory = erpTaskData.data
-            console.log(erpTaskData.data, "erpTaskData.data")
+                const taskList = erpTaskData.data
+                console.log(taskList, "erpTaskData.data")
+
+                taskList.forEach((instanceDatas) => {
+                    if (instanceDatas.instanceData)
+                        instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
+                })
+                // taskList.forEach((instanceDatas) => {
+                //     if (instanceDatas.instanceData.data)
+                //         instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
+                // })
+
+                console.log(taskList, "parsedData")
+                const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
+                this.erpTaskList = filteredTaskList
             }
         },
         async getErpTaskList() {
@@ -231,14 +248,16 @@ export default {
                 if (instanceDatas.instanceData)
                     instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
             })
-            taskList.forEach((instanceDatas) => {
-                if (instanceDatas.instanceData.data)
-                    instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
-            })
+            // taskList.forEach((instanceDatas) => {
+            //     if (instanceDatas.instanceData.data)
+            //         instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
+            // })
 
             console.log(taskList, "parsedData")
             const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
             this.erpTaskList = filteredTaskList
+            console.log(this.erpTaskList, " sjdskjsdjsfdkdsjfk");
+
             this.loading = false
         },
         getTaskNameById(id) {
@@ -265,23 +284,23 @@ export default {
         },
         async onClickReject() {
 
-            const taskPayload =   {
-  task_id: "532391a6-baa7-4acb-b265-cc5cd8e1edc3",
-  internal_task_id: "node_68c79b9e-3cd4-4d4d-b258-051b976b50b6",
-  task_action: "approve",
-  tenant_id: "102101",
-  createdBy: "selva",
-  instance_data: {
-    "email": "vignesh.saravanan@tekafforde.com",
-    "qid": "123456789",
-    "gender": "male",
-    "age": "27",
-    "spouse_qid": "212345678",
-    "status": "pending",
-    "witness1_qid": "312345678",
-    "witness2_qid": "412345678"
-  }
-}
+            const taskPayload = {
+                task_id: "532391a6-baa7-4acb-b265-cc5cd8e1edc3",
+                internal_task_id: "node_68c79b9e-3cd4-4d4d-b258-051b976b50b6",
+                task_action: "approve",
+                tenant_id: "102101",
+                createdBy: "selva",
+                instance_data: {
+                    "email": "vignesh.saravanan@tekafforde.com",
+                    "qid": "123456789",
+                    "gender": "male",
+                    "age": "27",
+                    "spouse_qid": "212345678",
+                    "status": "pending",
+                    "witness1_qid": "312345678",
+                    "witness2_qid": "412345678"
+                }
+            }
 
             await approveDocument(payload, (res) => {
                 this.visible = !this.visible;
@@ -300,49 +319,60 @@ export default {
             })
         },
         async onClickAccept() {
+            let singleInstace = {};
+            console.log(this.selectedProps, "props tesing");
 
-            const taskPayload =   {
-  task_id: "532391a6-baa7-4acb-b265-cc5cd8e1edc3",
-  internal_task_id: "node_68c79b9e-3cd4-4d4d-b258-051b976b50b6",
-  task_action: "approve",
-  tenant_id: "102101",
-  createdBy: "selva",
-  instance_data: {
-    "email": "vignesh.saravanan@tekafforde.com",
-    "qid": "123456789",
-    "gender": "male",
-    "age": "27",
-    "spouse_qid": "212345678",
-    "status": "pending",
-    "witness1_qid": "312345678",
-    "witness2_qid": "412345678"
-  }
-}
+            await getTaskForInstance(this.selectedProps?.processInstanceId, (res) => {
+                console.log(res, "instance data");
+                singleInstace = res;
+            });
+            const instance_daata = this.selectedProps;
+            console.log(instance_daata, "first instance");
             const erpPayload = {
                 ...constant.erpWorkflowTempPayload,
+                tenant_id: constant.erpWorkflowTempPayload.tenant_id,
+                createdBy: constant.erpWorkflowTempPayload.createdBy,
+                task_id: singleInstace.taskId,
+                internal_task_id: singleInstace.internalTaskId,
+                task_action: "approve",
                 email: constant.vendorEmail,
-                statusId: constant.taskStatus.approved,
-                instanceData: {
-                    ...this.selectedInstance
+                instance_data: {
+                    ...instance_daata.instanceData,
+                    statusId: constant.taskStatus.approved
                 }
             };
+
+            console.log(erpPayload, "second instance");
             await onApproveDocument(erpPayload, (res) => {
-                this.visible = !this.visible;
                 console.log(res, "approve document Data");
+            });
+            const upInstancePayload = {
+                process_instance_id: this.selectedProps?.processInstanceId,
+                business_key: instance_daata?.instanceData?.business_key,
+                instance_data: {
+                    ...erpPayload.instance_data
+                }
+            };
+            console.log(instance_daata?.instanceData?.business_key, "listance data check");
+
+            console.log(upInstancePayload, "third instance");
+            await updateIntanceData(upInstancePayload, (res) => {
+                console.log(res, "update instance Data");
+
+                this.visible = !this.visible;
                 this.$toast.add({ severity: 'success', detail: "Task Approved successfully ", life: 3000 });
                 this.getAlfrescoTask();
-            });
+            })
         },
         async changeModalVisibilty(slotProps) {
-            this.selectedInstance = slotProps?.data?.singleData;
+            this.selectedProps = slotProps;
+            console.log(slotProps, "data checking");
+            this.selectedInstance = slotProps?.instanceData;
+            console.log(this.selectedInstance?.documentId, "daf faf");
             this.visible = !this.visible;
-            this.processId = processId;
-            this.getFiles(processId);
+            this.processId = this.selectedInstance?.documentId;
+            this.getFiles(this.selectedInstance?.documentId);
         },
-        // async getTaskList() {
-        //     const response = await httpClient.get(endpoints.getTasklistURL);
-        //     this.tasks = response.data
-        // },
         async getAlfrescoTask() {
             await getAlfrescoTaskList((res) => {
                 this.tasks = res?.list?.entries;
@@ -371,14 +401,15 @@ export default {
                     password: "admin"
                 }
             });
-            const userDocList = await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/` + findUserId(folderList?.data?.list?.entries, documentId) + "/children", {
+            const userDocList = await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/` + findUserId(folderList?.data?.list?.entries, this.selectedInstance?.userName) + "/children", {
                 auth: {
                     username: localStorage.getItem("userName"),
                     password: "admin"
                 }
             });
-            const finalArr = sortTaskRelatedDocs(userDocList?.data?.list?.entries, this.documents); //not working
-            // const finalArr = userDocList?.data?.list?.entries;
+            const finalArr = sortTaskRelatedDocs(userDocList?.data?.list?.entries, documentId); //not working
+            console.log(finalArr, "finalArr");
+
             this.selectedDocs = finalArr;
             this.selectedDoc = finalArr[0];
             await httpClient.get(`/alfresco/api/-default-/public/alfresco/versions/1/nodes/${finalArr[0]?.entry?.id}/content`, {
@@ -391,9 +422,6 @@ export default {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
             })
-            console.log(finalArr);
-
-            console.log(userDocList?.data?.list?.entries, this.documents);
 
         },
         async getPdfFile(item) {

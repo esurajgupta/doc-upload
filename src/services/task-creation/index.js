@@ -61,3 +61,13 @@ export const updateERPWorkflow = async (payload, callback) => {
         callback(err)
     })
 };
+
+export const updateIntanceData = async (payload, callback) => {
+    await httpClient.post(endpoints.updateInstanceData, payload).then((res) => {
+        console.log(res, "updateinstancedata");
+        callback(res);
+    }).catch((err) => {
+        console.log(err, "error");
+        callback(err)
+    })
+}

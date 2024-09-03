@@ -45,11 +45,13 @@
 <script>
 import { constant } from "@/constants/constants";
 import { createNewTask, createTaskInERP, getUserList, getWorkflowList, updateERPWorkflow } from "@/services/task-creation";
+import { uuid } from "vue-uuid";
 export default {
     data() {
         return {
             selectedUser: null,
             selectedWorkflow: null,
+            uuid: uuid.v1(),
             description: "",
             userList: [],
             workflowList: [],
@@ -82,9 +84,11 @@ export default {
                 };
                 const payloadERP = {
                     ...constant.erpWorkflowTempPayload,
-                    assignee: this.selectedUser?.emm,
+                    business_key: this.uuid,
+                    assignee: this.selectedUser?.email,
                     instance_data: {
                         ...payload,
+                        business_key: this.uuid,
                         userName: this.selectedUser?.userName,
                         statusId: constant.taskStatus.initiated,
                         email: this.selectedUser?.email,

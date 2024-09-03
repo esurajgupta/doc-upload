@@ -20,7 +20,8 @@ const endpoints = {
         updateERPWorkflow: "/api/workflowApis/updateTask",
         erpTaskList: "/api/processInstances",
         getTaskByInstanceID: "/api/userTasks",
-        erpTaskHistory:"/api/userTaskHistories"
+        erpTaskHistory: "/api/processInstanceHistories",
+        updateInstanceData: "/api/workflowApis/updateInstanceData"
 };
 
 export default endpoints;

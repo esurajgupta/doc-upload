@@ -34,7 +34,7 @@ import { constant } from '@/constants/constants';
 import { parserXML } from '@/constants/functions';
 import router from '@/router';
 import { httpClient } from '@/services/interceptor';
-import { updateERPWorkflow } from '@/services/task-creation';
+import { updateERPWorkflow, updateIntanceData } from '@/services/task-creation';
 import { getTaskForInstance } from '@/services/task-list';
 
 export default {
@@ -148,6 +148,8 @@ export default {
                 singleInstace = res;
             });
             const instance_daata = this.taskData.instanceData;
+            console.log(instance_daata, "firsrt instance");
+
             delete instance_daata.header;
             const tempPayload = {
                 tenant_id: constant.erpWorkflowTempPayload.tenant_id,
@@ -164,11 +166,25 @@ export default {
                     statusId: constant.taskStatus.active
                 }
             };
-            updateERPWorkflow(tempPayload, (res) => {
+            console.log(tempPayload, "second instance");
+
+            await updateERPWorkflow(tempPayload, (res) => {
                 console.log(res, "gokul logging");
                 this.$toast.add({ severity: "successs", detail: "workflow updated successfully" });
-                setTimeout(() => router.push("/translanding/workflowList"), 1000);
             });
+
+            const upInstancePayload = {
+                process_instance_id: this.taskData?.processInstanceId,
+                business_key: instance_daata?.business_key,
+                instance_data: {
+                    ...tempPayload.instance_data
+                }
+            };
+            console.log(upInstancePayload, "third instance");
+
+            await updateIntanceData(upInstancePayload, (res) => {
+                setTimeout(() => router.push("/translanding/workflowList"), 1000);
+            })
         }
     },
     mounted() {
