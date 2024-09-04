@@ -146,9 +146,11 @@
                                 <span class="text-sm "
                                     v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"
                                     @click="getVersions(item.entry.id)"><i
-                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Versions :
-                                    ${this.latestVersion ? this.latestVersion : "Show Version"}`
+                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Versions : ${this.versionArray.length===0?"Show versions":""}`
                                     }}</span>
+                                    <span v-for="(data, index) in versionArray" :key="index" @click="getFileByVersion(data)">
+                                        {{ data }}
+                                    </span>
                             </div>
                         </div>
                     </div>
@@ -207,6 +209,7 @@ export default {
             tabvalue: 0,
             selectedProps: null,
             latestVersion: '',
+            versionArray:[],
             showVersion: false
 
 
@@ -214,6 +217,7 @@ export default {
     },
     methods: {
         async getVersions(documentId) {
+
             const res = await httpClient.get(`${endpoints.versions}/${documentId}/versions`, {
                 auth: {
                     username: localStorage.getItem("userName"),
@@ -226,9 +230,13 @@ export default {
                 return data.entry.id
             })
             console.log(versionIds, "versionIds")
-            const maxNumber = Math.max(...versionIds)
-            console.log(maxNumber, "maxNumber")
-            this.latestVersion = maxNumber
+            this.versionArray = versionIds.join(',\n').split('\n');
+
+            // const maxNumber = Math.max(...versionIds)
+            // console.log(maxNumber, "maxNumber")
+            // this.latestVersion = maxNumber
+
+            // this.getFileByVersion(this.latestVersion)
         },
 
         async onClickTab(val) {
@@ -488,7 +496,10 @@ export default {
             })
         },
         async getFileByVersion(versionId) {
-            await httpClient.get(endpoints.getFileUsingVersion + `/${this.selectedDoc}/versions/${versionId}/content`, {
+            console.log(versionId, "versionId")
+            const filterString=versionId.replace(',','');
+            console.log(filterString, "filterString")
+            await httpClient.get(endpoints.getFileUsingVersion + `/${this.selectedDoc.entry?.id}/versions/${filterString}/content`, {
                 auth: {
                     username: "admin",
                     password: "admin"
@@ -497,6 +508,10 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
+
+                const blob = new Blob([res.data], { type: res.headers['content-type'] });
+                const url = window.URL.createObjectURL(blob);
+                window.open(url);
             })
 
         },
