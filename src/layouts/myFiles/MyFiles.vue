@@ -3,6 +3,12 @@
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
             <DataTable :value="documentlists" tableStyle="min-width: 50rem">
                 <template #empty>No records.</template>
+
+                <Column field="entry.createdAt" header="Created Date">
+                    <template #body="slotProps">
+                        <div>{{ convertToReadableDate(slotProps.data.entry.createdAt) }}</div>
+                    </template>
+                </Column>
                 <Column field="entry.name" header="File"></Column>
                 <Column field="entry.content.mimeType" header="Content Type"></Column>
                 <!-- <Column field="entry.content.mimeTypeName" header="Type Name"></Column> -->
@@ -11,12 +17,7 @@
                         <div>{{ bytesToMB(slotProps.data.entry.content.sizeInBytes) + "MB" }}</div>
                     </template>
                 </Column>
-                <Column field="entry.createdAt" header="Created Date">
-                    <template #body="slotProps">
-                        <div>{{ convertToReadableDate(slotProps.data.entry.createdAt) }}</div>
-                    </template>
-                </Column>
-                <Column field="entry.createdByUser.displayName" header="Username"></Column>
+                <!-- <Column field="entry.createdByUser.displayName" header="Username"></Column> -->
                 <Column field="entry.id" header="Action">
                     <template #body="slotProps">
                         <span class="pi pi-eye text-primary" style="font-size: 1.3rem"
@@ -74,7 +75,7 @@ export default {
             pdfUrl: null,
             visible: false,
             versionsList: '',
-            versionArray:[]
+            versionArray: []
 
         };
     },
@@ -88,12 +89,12 @@ export default {
             })
 
             console.log(res.data?.list?.entries, "versions");
-             const versionids=res.data?.list?.entries.map((data)=>{
-            return data.entry.id
-             })
-             console.log(versionids,"veriosnarr")
-            this.versionArray=versionids.join(',\n').split('\n');
-             
+            const versionids = res.data?.list?.entries.map((data) => {
+                return data.entry.id
+            })
+            console.log(versionids, "veriosnarr")
+            this.versionArray = versionids.join(',\n').split('\n');
+
 
             // const tempVersion = res.data?.list?.entries[0].entry.id
             // this.versionsList=tempVersion

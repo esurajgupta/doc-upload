@@ -151,6 +151,12 @@ export default {
             console.log(instance_daata, "firsrt instance");
 
             delete instance_daata.header;
+            const parsedInstance = JSON.parse(instance_daata.data);
+            const parseTemplate = JSON.parse(parsedInstance[0].templateData);
+            console.log(parsedInstance, parseTemplate, "ffggssww");
+            parsedInstance[0]["templateData"] = JSON.stringify(parseTemplate);
+            instance_daata["data"] = JSON.stringify(parsedInstance);
+            console.log(instance_daata, "dasjkdajdsajs");
             const tempPayload = {
                 tenant_id: constant.erpWorkflowTempPayload.tenant_id,
                 createdBy: constant.erpWorkflowTempPayload.createdBy,
@@ -163,14 +169,14 @@ export default {
                     documentId: docDetails?.entry?.id,
                     documentName: docDetails?.entry?.name,
                     documentParentId: docDetails?.entry?.parentId,
-                    statusId: constant.taskStatus.active
+                    statusId: constant.taskStatus.completed
                 }
             };
             console.log(tempPayload, "second instance");
 
             await updateERPWorkflow(tempPayload, (res) => {
                 console.log(res, "gokul logging");
-                this.$toast.add({ severity: "successs", detail: "workflow updated successfully" });
+                this.$toast.add({ severity: "success", detail: "workflow updated successfully", life: 3000 });
             });
 
             const upInstancePayload = {

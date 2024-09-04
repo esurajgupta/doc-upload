@@ -25,18 +25,21 @@
             <DataTable :value="erpTaskList" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]">
                 <template #empty> No data found. </template>
-                <Column field="instanceData.workflowName" header="Workflow Name">
-                </Column>
-                <Column field="instanceData.description" header="Description"></Column>
+
                 <Column field="created_date" header="Created Date">
                     <template #body="slotProps">
                         <div>{{ convertToReadableDate(slotProps.data.created_date) }}</div>
                     </template>
                 </Column>
+                <Column field="instanceData.workflowName" header="Workflow Name">
+                </Column>
+                <Column field="instanceData.description" header="Description"></Column>
                 <Column field="instanceData.userName" header="Assignee"></Column>
                 <Column field="statusId" header="Status">
                     <template #body="slotProps">
-                        <div>{{ getTaskNameById(slotProps.data?.instanceData?.statusId) }}</div>
+                        <div>{{ tabvalue === 0 ? getTaskNameById(slotProps.data?.instanceData?.statusId) : "Completed"
+                            }}
+                        </div>
                     </template>
                 </Column>
                 <Column header="Action">
@@ -154,11 +157,11 @@
         <div class="flex gap-2 justify-end mt-3" v-if="tabvalue === 0">
             <div>
                 <Button label="Reject" severity="danger" size="small" style="font-size: small;"
-                    @click="this.onClickReject()" />
+                    @click="this.onClickAccept(1)" />
             </div>
             <div>
                 <Button label="Approve" severity="success" size="small" style="font-size: small;"
-                    @click="this.onClickAccept()" />
+                    @click="this.onClickAccept(0)" />
             </div>
         </div>
     </Dialog>
@@ -212,10 +215,6 @@ export default {
                     if (instanceDatas.instanceData)
                         instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
                 })
-                // taskList.forEach((instanceDatas) => {
-                //     if (instanceDatas.instanceData.data)
-                //         instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
-                // })
 
                 console.log(taskList, "parsedData")
                 const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
@@ -229,10 +228,6 @@ export default {
                     if (instanceDatas.instanceData)
                         instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
                 })
-                // taskList.forEach((instanceDatas) => {
-                //     if (instanceDatas.instanceData.data)
-                //         instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
-                // })
 
                 console.log(taskList, "parsedData")
                 const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
@@ -248,11 +243,6 @@ export default {
                 if (instanceDatas.instanceData)
                     instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
             })
-            // taskList.forEach((instanceDatas) => {
-            //     if (instanceDatas.instanceData.data)
-            //         instanceDatas.instanceData.data = JSON.parse(instanceDatas.instanceData.data)
-            // })
-
             console.log(taskList, "parsedData")
             const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
             this.erpTaskList = filteredTaskList
@@ -318,7 +308,7 @@ export default {
 
             })
         },
-        async onClickAccept() {
+        async onClickAccept(tabId) {
             let singleInstace = {};
             console.log(this.selectedProps, "props tesing");
 
@@ -327,18 +317,27 @@ export default {
                 singleInstace = res;
             });
             const instance_daata = this.selectedProps;
+
             console.log(instance_daata, "first instance");
+            const istData = instance_daata.instanceData;
+            const parsedInstance = JSON.parse(istData.data);
+            const parseTemplate = JSON.parse(parsedInstance[0].templateData);
+            console.log(parsedInstance, parseTemplate, "ffggssww");
+            parsedInstance[0]["templateData"] = JSON.stringify(parseTemplate);
+            istData["data"] = JSON.stringify(parsedInstance);
+            console.log(instance_daata, "dasjkdajdsajs");
             const erpPayload = {
                 ...constant.erpWorkflowTempPayload,
+                business_key: istData.business_key,
                 tenant_id: constant.erpWorkflowTempPayload.tenant_id,
                 createdBy: constant.erpWorkflowTempPayload.createdBy,
                 task_id: singleInstace.taskId,
                 internal_task_id: singleInstace.internalTaskId,
-                task_action: "approve",
+                task_action: tabId === 0 ? "approve" : "reject",
                 email: constant.vendorEmail,
                 instance_data: {
-                    ...instance_daata.instanceData,
-                    statusId: constant.taskStatus.approved
+                    ...istData,
+                    statusId: tabId === 0 ? constant.taskStatus.approved : constant.taskStatus.rejected
                 }
             };
 
@@ -350,7 +349,8 @@ export default {
                 process_instance_id: this.selectedProps?.processInstanceId,
                 business_key: instance_daata?.instanceData?.business_key,
                 instance_data: {
-                    ...erpPayload.instance_data
+                    ...erpPayload.instance_data,
+                    statusId: tabId === 0 ? constant.taskStatus.approved : constant.taskStatus.rejected
                 }
             };
             console.log(instance_daata?.instanceData?.business_key, "listance data check");
@@ -360,8 +360,13 @@ export default {
                 console.log(res, "update instance Data");
 
                 this.visible = !this.visible;
-                this.$toast.add({ severity: 'success', detail: "Task Approved successfully ", life: 3000 });
-                this.getAlfrescoTask();
+                if (tabId === 0) {
+                    this.$toast.add({ severity: 'success', detail: "Task Approved successfully ", life: 3000 });
+                } else {
+                    this.$toast.add({ severity: 'success', detail: "Task Rejected successfully ", life: 3000 });
+
+                }// this.getAlfrescoTask();
+                this.getErpTaskList();
             })
         },
         async changeModalVisibilty(slotProps) {
@@ -388,7 +393,6 @@ export default {
             });
         },
         async getFiles(documentId) {
-
             const docsList = await httpClient.get(`${endpoints.getDocuments}`, {
                 auth: {
                     username: localStorage.getItem("userName"),

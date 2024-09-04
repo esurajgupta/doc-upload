@@ -99,10 +99,10 @@ export default {
                             referenceId: "i121",
                             userName: this.selectedUser?.userName,
                             email: this.selectedUser?.email,
-                            templateData: {
+                            templateData: JSON.stringify({
                                 userName: this.selectedUser?.userName,
                                 redirectURL: "http://localhost:5173"
-                            }
+                            })
                         }]),
                     }
                 };
@@ -119,7 +119,7 @@ export default {
         async createERPWorkflow(payload) {
             await createTaskInERP(payload, (res) => {
                 console.log(res, "ERP API");
-                this.$toast.add({ severity: 'success', detail: 'Workflow Initiated  Successfully', life: 3000 })
+                this.$toast.add({ severity: 'success', detail: 'Workflow Initiated Successfully', life: 3000 })
             });
         },
 
