@@ -1,6 +1,6 @@
-import './assets/main.css'
+import './assets/main.css';
 // import './index.css'
-import 'primeicons/primeicons.css'
+import 'primeicons/primeicons.css';
 
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -29,7 +29,8 @@ import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import ProgressSpinner from 'primevue/progressspinner';
 import Breadcrumbs from 'primevue/breadcrumb';
-import ThemeSwitcher from './components/ThemeSwitcher.vue'
+import ThemeSwitcher from './components/ThemeSwitcher.vue';
+import OrganizationChart from 'primevue/organizationchart';
 const app = createApp(App)
 
 app.use(PrimeVue, {
@@ -43,7 +44,7 @@ app.use(PrimeVue, {
 app.use(router);
 app.use(ToastService);
 app.mount('#app');
-app.component('AutoComplete',AutoComplete);
+app.component('AutoComplete', AutoComplete);
 app.component('Button', Button);
 app.component('FileUpload', FileUpload);
 app.component('Panel', Panel);
@@ -66,3 +67,4 @@ app.component('Tab', Tab);
 app.component('ProgressSpinner', ProgressSpinner);
 app.component('Breadcrumbs', Breadcrumbs);
 app.component('ThemeSwitcher', ThemeSwitcher);
+app.component('OrganizationChart', OrganizationChart);

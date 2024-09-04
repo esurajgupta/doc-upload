@@ -7,6 +7,7 @@ import TaskList from '@/layouts/taskList/TaskList.vue'
 import WorkflowList from '@/layouts/workflow/WorkflowList.vue'
 import MyFiles from '@/layouts/myFiles/MyFiles.vue'
 import ErpTaskList from '@/layouts/taskList/ErpTaskList.vue'
+import InstanceList from '@/layouts/instanceList/InstanceList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,18 +67,6 @@ const router = createRouter({
             }]
           }
         },
-        // {
-        //   path:'ErpTaskList',
-        //   component: ErpTaskList,
-        //   meta: {
-        //     breadcrumb: [{
-        //       label: "ErpTaskList"
-        //     }, {
-        //       label: "Erp Task List",
-        //       route: "/translanding/ErpTaskList"
-        //     }]
-        //   }
-        // },
         {
           path: 'myFiles',
           name: 'myFiles',
@@ -88,6 +77,19 @@ const router = createRouter({
             }, {
               label: "My Files",
               route: "/translanding/myFiles"
+            }]
+          }
+        },
+        {
+          path: 'InstanceHistory',
+          name: 'Instance History',
+          component: InstanceList,
+          meta: {
+            breadcrumb: [{
+              label: "Instance History"
+            }, {
+              label: "Instance History",
+              route: "/translanding/InstanceHistory"
             }]
           }
         },

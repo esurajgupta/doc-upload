@@ -44,7 +44,7 @@
                 </Column>
                 <Column header="Action">
                     <template #body="slotProps">
-                        <div class="h-full w-full flex justify-start items-center pl-4">
+                        <div class="h-full w-full flex justify-start items-center pl-4 gap-3">
                             <span class="pi pi-cloud-upload" v-if="this.userRole === 'user'" @click=" this.$router.push({
                                 path: '/translanding/uploadDocument',
                                 state: { taskData: JSON.stringify(slotProps?.data) }
@@ -55,6 +55,11 @@
                             <span class="pi pi-eye text-primary" style="font-size: 1.3rem"
                                 v-if="this.userRole === 'admin' && tabvalue === 1"
                                 @click="changeModalVisibilty(slotProps?.data)"></span>
+                            <span class="pi pi-history" :class="[this.userRole === 'admin' ? 'text-primary' : '']"
+                                :style="[this.userRole === 'admin' ? 'font-size: 1.3rem' : '']" @click="this.$router.push({
+                                    path: '/translanding/InstanceHistory',
+                                    state: { prInsId: slotProps?.data.processInstanceId }
+                                })"></span>
                         </div>
                     </template>
                 </Column>
@@ -142,7 +147,7 @@
                                     v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"
                                     @click="getVersions(item.entry.id)"><i
                                         class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Versions :
-                                        ${this.latestVersion?this.latestVersion:"Show Version"}`
+                                    ${this.latestVersion ? this.latestVersion : "Show Version"}`
                                     }}</span>
                             </div>
                         </div>
@@ -221,9 +226,9 @@ export default {
                 return data.entry.id
             })
             console.log(versionIds, "versionIds")
-            const maxNumber=Math.max(...versionIds)
-            console.log(maxNumber,"maxNumber")
-            this.latestVersion=maxNumber
+            const maxNumber = Math.max(...versionIds)
+            console.log(maxNumber, "maxNumber")
+            this.latestVersion = maxNumber
         },
 
         async onClickTab(val) {
@@ -239,16 +244,15 @@ export default {
                 })
 
                 console.log(taskList, "parsedData")
-                if(this.userName !== constant.adminUserName)
-                {
-                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName  && data.instanceData.userName === this.userName);
+                if (this.userName !== constant.adminUserName) {
+                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName && data.instanceData.userName === this.userName);
                     this.erpTaskList = filteredTaskList
                 }
-                else{
+                else {
                     const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
                     this.erpTaskList = filteredTaskList
                 }
-                
+
             } else {
                 const erpTaskData = await httpClient.get(endpoints.erpTaskHistory)
                 const taskList = erpTaskData.data
@@ -260,12 +264,11 @@ export default {
                 })
 
                 console.log(taskList, "parsedData")
-                if(this.userName !== constant.adminUserName)
-                {
-                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName  && data.instanceData.userName === this.userName);
+                if (this.userName !== constant.adminUserName) {
+                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName && data.instanceData.userName === this.userName);
                     this.erpTaskList = filteredTaskList
                 }
-                else{
+                else {
                     const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
                     this.erpTaskList = filteredTaskList
                 }
@@ -281,15 +284,14 @@ export default {
                     instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
             })
             console.log(taskList, "parsedData")
-            if(this.userName !== constant.adminUserName)
-                {
-                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName  && data.instanceData.userName === this.userName);
-                    this.erpTaskList = filteredTaskList
-                }
-                else{
-                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
-                    this.erpTaskList = filteredTaskList
-                }
+            if (this.userName !== constant.adminUserName) {
+                const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName && data.instanceData.userName === this.userName);
+                this.erpTaskList = filteredTaskList
+            }
+            else {
+                const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
+                this.erpTaskList = filteredTaskList
+            }
             console.log(this.erpTaskList, " sjdskjsdjsfdkdsjfk");
 
             this.loading = false
@@ -485,9 +487,8 @@ export default {
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
             })
         },
-        async getFileByVersion(versionId)
-        {
-            await httpClient.get(endpoints.getFileUsingVersion+`/${this.selectedDoc}/versions/${versionId}/content`,{
+        async getFileByVersion(versionId) {
+            await httpClient.get(endpoints.getFileUsingVersion + `/${this.selectedDoc}/versions/${versionId}/content`, {
                 auth: {
                     username: "admin",
                     password: "admin"

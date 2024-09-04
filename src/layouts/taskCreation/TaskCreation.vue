@@ -112,13 +112,13 @@ export default {
                 this.description = "";
                 this.selectedUser = null;
                 this.selectedWorkflow = null;
-                setTimeout(() => this.$router.push("/translanding"), 1000);
             });
 
         },
         async createERPWorkflow(payload) {
             await createTaskInERP(payload, (res) => {
                 console.log(res, "ERP API");
+                setTimeout(() => this.$router.push("/translanding"), 1000);
                 this.$toast.add({ severity: 'success', detail: 'Workflow Initiated Successfully', life: 3000 })
             });
         },

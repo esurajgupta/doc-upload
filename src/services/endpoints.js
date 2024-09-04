@@ -22,9 +22,14 @@ const endpoints = {
         getTaskByInstanceID: "/api/userTasks",
         erpTaskHistory: "/api/processInstanceHistories",
         updateInstanceData: "/api/workflowApis/updateInstanceData",
-        versions:"/alfresco/api/-default-/public/alfresco/versions/1/nodes",
-        getFileUsingVersion:"/alfresco/api/-default-/public/alfresco/versions/1/nodes",
-        // /{nodeId}/versions/{versionId}/content
-};     
+        versions: "/alfresco/api/-default-/public/alfresco/versions/1/nodes",
+        getFileUsingVersion: "/alfresco/api/-default-/public/alfresco/versions/1/nodes",
+        userTaskHistory: "/api/userTaskHistories",
+        evenntlist: "/api/events",
+        getSingleInstanceById: "/api/processInstanceHistories",
+        getSingleWorkFlowById: "/api/workflowVersions",
+        getUserTasks: "/api/userTasks",
+        getSingleInstancefortasksById: "/api/processInstances"
+};
 
 export default endpoints;
