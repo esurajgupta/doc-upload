@@ -139,8 +139,10 @@
                                         class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Modified At :
                                     ${formatDate(new Date(item?.entry?.modifiedAt))}` }}</span>
                                 <span class="text-sm "
-                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"><i
-                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `(No Comment)`
+                                    v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"
+                                    @click="getVersions(item.entry.id)"><i
+                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Versions :
+                                        ${this.latestVersion?this.latestVersion:"Show Version"}`
                                     }}</span>
                             </div>
                         </div>
@@ -198,12 +200,32 @@ export default {
             copied: false,
             loading: false,
             tabvalue: 0,
-            selectedProps: null
+            selectedProps: null,
+            latestVersion: '',
+            showVersion: false
 
 
         };
     },
     methods: {
+        async getVersions(documentId) {
+            const res = await httpClient.get(`${endpoints.versions}/${documentId}/versions`, {
+                auth: {
+                    username: localStorage.getItem("userName"),
+                    password: "admin"
+                }
+            })
+            this.showVersion = !this.showVersion
+            console.log(res.data?.list?.entries, "versions");
+            const versionIds = res.data?.list?.entries.map((data) => {
+                return data.entry.id
+            })
+            console.log(versionIds, "versionIds")
+            const maxNumber=Math.max(...versionIds)
+            console.log(maxNumber,"maxNumber")
+            this.latestVersion=maxNumber
+        },
+
         async onClickTab(val) {
             this.tabvalue = val;
             if (this.tabvalue === 0) {
