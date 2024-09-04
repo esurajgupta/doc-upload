@@ -239,8 +239,16 @@ export default {
                 })
 
                 console.log(taskList, "parsedData")
-                const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
-                this.erpTaskList = filteredTaskList
+                if(this.userName !== constant.adminUserName)
+                {
+                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName  && data.instanceData.userName === this.userName);
+                    this.erpTaskList = filteredTaskList
+                }
+                else{
+                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
+                    this.erpTaskList = filteredTaskList
+                }
+                
             } else {
                 const erpTaskData = await httpClient.get(endpoints.erpTaskHistory)
                 const taskList = erpTaskData.data
@@ -252,8 +260,15 @@ export default {
                 })
 
                 console.log(taskList, "parsedData")
-                const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
-                this.erpTaskList = filteredTaskList
+                if(this.userName !== constant.adminUserName)
+                {
+                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName  && data.instanceData.userName === this.userName);
+                    this.erpTaskList = filteredTaskList
+                }
+                else{
+                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
+                    this.erpTaskList = filteredTaskList
+                }
             }
         },
         async getErpTaskList() {
@@ -266,8 +281,15 @@ export default {
                     instanceDatas.instanceData = JSON.parse(instanceDatas.instanceData)
             })
             console.log(taskList, "parsedData")
-            const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
-            this.erpTaskList = filteredTaskList
+            if(this.userName !== constant.adminUserName)
+                {
+                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName  && data.instanceData.userName === this.userName);
+                    this.erpTaskList = filteredTaskList
+                }
+                else{
+                    const filteredTaskList = taskList.filter((data) => data.instanceData && data.instanceData?.userName);
+                    this.erpTaskList = filteredTaskList
+                }
             console.log(this.erpTaskList, " sjdskjsdjsfdkdsjfk");
 
             this.loading = false
@@ -462,6 +484,20 @@ export default {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
             })
+        },
+        async getFileByVersion(versionId)
+        {
+            await httpClient.get(endpoints.getFileUsingVersion+`/${this.selectedDoc}/versions/${versionId}/content`,{
+                auth: {
+                    username: "admin",
+                    password: "admin"
+                },
+                responseType: 'blob'
+            }).then((res) => {
+                const binaryString = res?.data;
+                this.pdfUrl = window.URL.createObjectURL(binaryString);
+            })
+
         },
         bytesToMB(bytes) {
             const megabytes = bytes / (1024 * 1024);

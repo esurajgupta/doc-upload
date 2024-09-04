@@ -23,6 +23,8 @@ const endpoints = {
         erpTaskHistory: "/api/processInstanceHistories",
         updateInstanceData: "/api/workflowApis/updateInstanceData",
         versions:"/alfresco/api/-default-/public/alfresco/versions/1/nodes",
-};
+        getFileUsingVersion:"/alfresco/api/-default-/public/alfresco/versions/1/nodes",
+        // /{nodeId}/versions/{versionId}/content
+};     
 
 export default endpoints;
