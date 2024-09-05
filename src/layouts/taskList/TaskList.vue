@@ -121,7 +121,7 @@
                 <div class="col-span-9 w-full" style="height: 75vh;">
                     <!-- <iframe :src="pdfUrl" style="width: 100%;height:100%;" sandbox="allow-same-origin"
                         referrerpolicy="no-referrer" /> -->
-                        <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
+                    <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
                         type="application/pdf"></iframe>
                     <div v-else>
                         No data Found.
@@ -315,8 +315,8 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                console.log(this.pdfUrl,"pdf values")
-                if (this.pdfUrl.type === 'application/pdf') {
+                console.log(this.pdfUrl, "pdf values")
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
@@ -340,7 +340,7 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {

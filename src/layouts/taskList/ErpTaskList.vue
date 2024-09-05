@@ -146,11 +146,13 @@
                                 <span class="text-sm "
                                     v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"
                                     @click="getVersions(item.entry.id)"><i
-                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Versions : ${this.versionArray.length===0?"Show versions":""}`
+                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Versions :
+                                    ${this.versionArray.length === 0 ? "Show versions" : ""}`
                                     }}</span>
-                                    <span v-for="(data, index) in versionArray" :key="index" @click="getFileByVersion(data)">
-                                        {{ data }}
-                                    </span>
+                                <span v-for="(data, index) in versionArray" :key="index"
+                                    @click="getFileByVersion(data)">
+                                    {{ data }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -158,11 +160,12 @@
                 <div class="col-span-9 w-full" style="height: 75vh;">
                     <!-- <iframe :src="pdfUrl" style="width: 100%;height:100%;" sandbox="allow-same-origin"
                         referrerpolicy="no-referrer" /> -->
-                        <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
+                    <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
                         type="application/pdf"></iframe>
                     <div v-else>
                         No data Found.
-                    </div>                </div>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -212,7 +215,7 @@ export default {
             tabvalue: 0,
             selectedProps: null,
             latestVersion: '',
-            versionArray:[],
+            versionArray: [],
             showVersion: false,
             pdfValidation: false,
 
@@ -483,7 +486,7 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
@@ -504,7 +507,7 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
@@ -515,7 +518,7 @@ export default {
         },
         async getFileByVersion(versionId) {
             console.log(versionId, "versionId")
-            const filterString=versionId.replace(',','');
+            const filterString = versionId.replace(',', '');
             console.log(filterString, "filterString")
             await httpClient.get(endpoints.getFileUsingVersion + `/${this.selectedDoc.entry?.id}/versions/${filterString}/content`, {
                 auth: {
@@ -526,8 +529,8 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                console.log(this.pdfUrl,"pdf values")
-                if (this.pdfUrl.type === 'application/pdf') {
+                console.log(this.pdfUrl, "pdf values")
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {

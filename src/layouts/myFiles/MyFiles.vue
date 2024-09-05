@@ -36,7 +36,8 @@
                         <p class="text-lg font-medium text-slate-500">Versions</p>
                     </div>
                     <div class="flex flex-col">
-                        <span v-for="(data, index) in versionArray" :key="index" @click="getFileByVersion(data)" class="cursor-pointer">
+                        <span v-for="(data, index) in versionArray" :key="index" @click="getFileByVersion(data)"
+                            class="cursor-pointer">
                             {{ data }}
                         </span>
                         <!-- {{this.versionsList}} -->
@@ -45,11 +46,12 @@
                 <div class="col-span-9 w-full" style="height: 75vh;">
                     <!-- <iframe :src="pdfUrl" style="width: 100%;height:100%;" sandbox="allow-same-origin"
                         referrerpolicy="no-referrer" /> -->
-                        <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
+                    <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
                         type="application/pdf"></iframe>
                     <div v-else>
                         No data Found.
-                    </div>                </div>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -80,14 +82,14 @@ export default {
             visible: false,
             versionsList: '',
             versionArray: [],
-            docId:"",
+            docId: "",
 
         };
     },
     methods: {
         async getFileByVersion(versionId) {
             console.log(versionId, "versionId")
-            const filterString=versionId.replace(',','');
+            const filterString = versionId.replace(',', '');
             console.log(filterString, "filterString")
             await httpClient.get(endpoints.getFileUsingVersion + `/${this.docId}/versions/${filterString}/content`, {
                 auth: {
@@ -98,7 +100,7 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
@@ -113,7 +115,7 @@ export default {
 
         },
         async changeModalVisibilty(documentId) {
-            this.docId=documentId
+            this.docId = documentId
             const res = await httpClient.get(`${endpoints.versions}/${documentId}/versions`, {
                 auth: {
                     username: localStorage.getItem("userName"),
@@ -142,7 +144,7 @@ export default {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
                 console.log(this.pdfUrl, "pdf url")
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {

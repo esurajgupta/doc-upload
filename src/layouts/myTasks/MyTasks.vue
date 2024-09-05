@@ -205,7 +205,7 @@ import InstanceList from '../instanceList/InstanceList.vue';
 export default {
     data() {
         return {
-            
+
             erpTaskList: [],
             erpTaskHistory: [],
             userRole: "",
@@ -505,7 +505,7 @@ export default {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
                 console.log(this.pdfUrl, '3123312')
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
@@ -527,7 +527,7 @@ export default {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
                 console.log(this.pdfUrl, "pdf values")
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
@@ -549,7 +549,7 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {

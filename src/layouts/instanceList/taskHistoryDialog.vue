@@ -1,44 +1,44 @@
 <template>
-   
-       
-        <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
-            <div>
-                <ul
-                    class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
-                    <li class="me-2" @click="this.onClickTab(0)">
-                        <a href="#" aria-current="page"
-                            class="inline-block p-4 text-blue-800  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
-                            :class="[this.tabvalue === 0 ? 'active bg-gray-100' : '']">Task</a>
-                    </li>
-                    <li class="me-2" @click="this.onClickTab(1)">
-                        <a href="#"
-                            class="inline-block p-4 text-blue-800  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
-                            :class="[this.tabvalue === 1 ? 'active bg-gray-100 ' : '']">History</a>
-                    </li>
-                </ul>
-            </div>
-            <DataTable :value="erpTaskList" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
-                :rowsPerPageOptions="[5, 10, 20, 50]">
-                <template #empty> No data found. </template>
 
-                <Column field="created_date" header="Created Date">
-                    <template #body="slotProps">
-                        <div>{{ convertToReadableDate(slotProps.data.created_date) }}</div>
-                    </template>
-                </Column>
-                <Column field="instanceData.workflowName" header="Workflow Name">
-                </Column>
-                <Column field="instanceData.description" header="Description"></Column>
-                <Column field="instanceData.userName" header="Assignee"></Column>
-                <Column field="statusId" header="Status">
-                    <template #body="slotProps">
-                        <div>{{ tabvalue === 0 ? getTaskNameById(slotProps.data?.statusId) : "Completed"
-                            }}
-                        </div>
-                    </template>
-                </Column>
-            </DataTable>
+
+    <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
+        <div>
+            <ul
+                class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                <li class="me-2" @click="this.onClickTab(0)">
+                    <a href="#" aria-current="page"
+                        class="inline-block p-4 text-blue-800  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                        :class="[this.tabvalue === 0 ? 'active bg-gray-100' : '']">Task</a>
+                </li>
+                <li class="me-2" @click="this.onClickTab(1)">
+                    <a href="#"
+                        class="inline-block p-4 text-blue-800  rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                        :class="[this.tabvalue === 1 ? 'active bg-gray-100 ' : '']">History</a>
+                </li>
+            </ul>
         </div>
+        <DataTable :value="erpTaskList" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
+            :rowsPerPageOptions="[5, 10, 20, 50]">
+            <template #empty> No data found. </template>
+
+            <Column field="created_date" header="Created Date">
+                <template #body="slotProps">
+                    <div>{{ convertToReadableDate(slotProps.data.created_date) }}</div>
+                </template>
+            </Column>
+            <Column field="instanceData.workflowName" header="Workflow Name">
+            </Column>
+            <Column field="instanceData.description" header="Description"></Column>
+            <Column field="instanceData.userName" header="Assignee"></Column>
+            <Column field="statusId" header="Status">
+                <template #body="slotProps">
+                    <div>{{ tabvalue === 0 ? getTaskNameById(slotProps.data?.statusId) : "Completed"
+                        }}
+                    </div>
+                </template>
+            </Column>
+        </DataTable>
+    </div>
 
     <Dialog v-model:visible="visible" header="Document Verification"
         :style="{ width: '75vw', backgroundColor: '#ffffff' }" position="center" :modal="true" :draggable="false"
@@ -104,7 +104,7 @@
                 <div class="col-span-9 w-full" style="height: 75vh;">
                     <!-- <iframe :src="pdfUrl" style="width: 100%;height:100%;" sandbox="allow-same-origin"
                         referrerpolicy="no-referrer" /> -->
-                        <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
+                    <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
                         type="application/pdf"></iframe>
                     <div v-else>
                         No data Found.
@@ -388,7 +388,7 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
@@ -409,7 +409,7 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                if (this.pdfUrl.type === 'application/pdf') {
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
@@ -431,8 +431,8 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
-                console.log(this.pdfUrl,"pdf values")
-                if (this.pdfUrl.type === 'application/pdf') {
+                console.log(this.pdfUrl, "pdf values")
+                if (res.status === 200) {
                     this.pdfValidation = true
                     console.error('The file is valid PDF');
                 } else {
