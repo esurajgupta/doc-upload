@@ -165,6 +165,11 @@ export default {
                 task_action: "approve",
                 instance_data: {
                     ...instance_daata,
+                    templateId: 5004,
+                    templateName: "endtask",
+                    mediaId: 2002,
+                    taskId: singleInstace.taskId,
+                    assigneename: instance_daata.userName,
                     status: "pending",
                     documentId: docDetails?.entry?.id,
                     documentName: docDetails?.entry?.name,

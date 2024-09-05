@@ -60,6 +60,10 @@
                                     path: '/translanding/Instance',
                                     state: { prInsId: slotProps?.data.processInstanceId }
                                 })"></span> -->
+                            <!-- <span class="pi pi-history" :class="[this.userRole === 'admin' ? 'text-primary' : '']"
+                                :style="[this.userRole === 'admin' ? 'font-size: 1.3rem' : '']"
+                                @click="changeModalVisibility(slotProps)" v-if="this.userRole === 'admin'">
+                            </span> -->
                         </div>
                     </template>
                 </Column>
@@ -176,9 +180,10 @@
             </div>
         </div>
     </Dialog>
-    <Dialog v-model:visible="visible" header="Instance" :style="{ width: '75vw', backgroundColor: '#ffffff' }"
-        position="center" :modal="true" :draggable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-
+    <Dialog v-model:visible="instanceHistory" header="Instance History"
+        :style="{ width: '75vw', backgroundColor: '#ffffff' }" position="center" :modal="true" :draggable="false"
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <InstanceList />
     </Dialog>
     <Toast />
 </template>
@@ -191,6 +196,7 @@ import { httpClient } from '@/services/interceptor';
 import { fetchTaskDocuments, updateIntanceData } from '@/services/task-creation';
 import { approveDocument, getAlfrescoTaskList, getTaskForInstance, onApproveDocument } from '@/services/task-list';
 import convertToReadableDate from '@/utils/dataUtils';
+import InstanceList from '../instanceList/InstanceList.vue';
 
 export default {
     data() {
@@ -216,12 +222,18 @@ export default {
             selectedProps: null,
             latestVersion: '',
             versionArray: [],
-            showVersion: false
+            showVersion: false,
+            instanceHistory: false, // Controls the visibility of the Instance History dialog
+            selectedProcessInstanceId: null
 
 
         };
     },
     methods: {
+        changeModalVisibility(slotProps) {
+            this.selectedProcessInstanceId = slotProps.data.processInstanceId; // Set the selected instance ID
+            this.instanceHistory = true; // Show the dialog
+        },
         async getVersions(documentId) {
 
             const res = await httpClient.get(`${endpoints.versions}/${documentId}/versions`, {
@@ -550,6 +562,6 @@ export default {
         this.userRole = localStorage.getItem("role")
         this.userName = localStorage.getItem("userName")
         this.getErpTaskList()
-    }
+    },
 };
 </script>

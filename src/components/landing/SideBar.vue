@@ -86,9 +86,10 @@ export default {
     methods: {
         menuListItem() {
             const menuList = [
-                { "menuUrl": "/translanding/workflowList", "menuIcon": "pi pi-sitemap", "menuName": "Workflow", "parentmenuid": null, "isActive": false, "children": [] },
 
-                { "menuUrl": "/translanding/InstanceHistory", "menuIcon": "pi pi-clone", "menuName": "Instance History", "parentmenuid": null, "isActive": false, "children": [] }
+                { "menuUrl": "/translanding/myTasks", "menuIcon": "pi pi-clipboard", "menuName": "My Tasks", "parentmenuid": null, "isActive": false, "children": [] }
+
+                // { "menuUrl": "/translanding/instance", "menuIcon": "pi pi-clone", "menuName": "Instance", "parentmenuid": null, "isActive": false, "children": [] } maybe required 
 
                 // { "menuUrl": "/translanding/user", "menuIcon": "user", "menuName": "User", "parentmenuid": null, "isActive": false, "children": [] },
 
@@ -103,7 +104,9 @@ export default {
                 // menuList.push(
                 //     { "menuUrl": "/translanding/myFiles", "menuIcon": "pi pi-folder-open", "menuName": "My Files", "parentmenuid": null, "isActive": false, "children": [] }
                 // );
-
+                menuList.push(
+                    { "menuUrl": "/translanding/workflowList", "menuIcon": "pi pi-sitemap", "menuName": "Running Instances", "parentmenuid": null, "isActive": false, "children": [] },
+                )
 
             };
             if (localStorage.getItem("role") !== constant.adminUserName) {
