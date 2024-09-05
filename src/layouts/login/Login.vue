@@ -100,7 +100,7 @@ export default {
                     localStorage.setItem("role", "user");
                     localStorage.setItem("userName",this.email)
                 }
-                this.$router.push("/translanding");
+                this.$router.push("/translanding/myTasks");
                 // axios.post("/user/loginAPI", payload, {})
                 //   .then((res) => {
                 //     console.log("---------------------local token--------", res);

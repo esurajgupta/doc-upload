@@ -194,7 +194,7 @@ export default {
             console.log(upInstancePayload, "third instance");
 
             await updateIntanceData(upInstancePayload, (res) => {
-                setTimeout(() => router.push("/translanding/workflowList"), 1000);
+                setTimeout(() => router.push("/translanding/myTasks"), 1000);
             })
         }
     },

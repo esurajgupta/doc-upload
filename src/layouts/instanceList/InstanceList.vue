@@ -4,7 +4,7 @@
             <DataTable :value="instanceList" tableStyle="min-width: 50rem;min-height:10rem;max-width:70rem" paginator
                 :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]">
                 <template #empty> No data found. </template>
-                <Column field="workflowDate" header="Workflow Date">
+                <Column field="workflowDate" header="Date">
                     <template #body="slotProps">
                         <div>{{ convertToReadableDate(getWorkflowDate(slotProps.data.workflowDate)) }}</div>
                     </template>
@@ -42,7 +42,7 @@
                 </Column>
                 <Column header="Action">
                     <template #body="slotProps">
-                        <span class="pi pi-history" :class="'text-primary'" :style="'font-size: 1.3rem'"
+                        <span class="pi pi-eye" :class="'text-primary'" :style="'font-size: 1.3rem'"
                             @click="changeModalVisibility(slotProps)">
                         </span>
                     </template>
@@ -62,7 +62,7 @@
                 :style="{ width: '75vw', backgroundColor: '#ffffff' }" position="center" :modal="true"
                 :draggable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                 <!-- <TaskList /> -->
-                <MyTasks />
+                <TaskHistoryDialog/>
             </Dialog>
 
         </div>
@@ -75,6 +75,7 @@ import convertToReadableDate from "@/utils/dataUtils";
 import { VoBasic } from "vue-orgchart";
 import TaskList from "../taskList/TaskList.vue";
 import MyTasks from "../myTasks/MyTasks.vue";
+import TaskHistoryDialog from "./taskHistoryDialog.vue";
 export default {
 
     name: "InstanceList",
@@ -99,7 +100,8 @@ export default {
     },
     components: {
         TaskList,
-        MyTasks
+        MyTasks,
+        TaskHistoryDialog
     },
     methods: {
         changeModalVisibility(slotProps) {

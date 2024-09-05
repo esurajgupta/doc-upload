@@ -1,11 +1,6 @@
 <template>
-    <div class="h-screen overflow-y-scroll w-full">
-        <div class="flex justify-end m-2" v-if="this.userRole === 'admin'">
-            <Button label="Create Workflow +" class=" text-white" @click="this.$router.push({
-                path: '/translanding/createWorkflow',
-                state: { secretData: 'This is hidden data' }
-            })" />
-        </div>
+   
+       
         <div class="bg-white p-8  m-2 h-fit rounded shadow-3xl">
             <div>
                 <ul
@@ -55,11 +50,11 @@
                             <span class="pi pi-eye text-primary" style="font-size: 1.3rem"
                                 v-if="this.userRole === 'admin' && tabvalue === 1"
                                 @click="changeModalVisibilty(slotProps?.data)"></span>
-                            <span class="pi pi-history" :class="[this.userRole === 'admin' ? 'text-primary' : '']"
+                            <!-- <span class="pi pi-history" :class="[this.userRole === 'admin' ? 'text-primary' : '']"
                                 :style="[this.userRole === 'admin' ? 'font-size: 1.3rem' : '']" @click="this.$router.push({
-                                    path: '/translanding/InstanceHistory',
+                                    path: '/translanding/Instance',
                                     state: { prInsId: slotProps?.data.processInstanceId }
-                                })"></span>
+                                })"></span> -->
                         </div>
                     </template>
                 </Column>
@@ -95,7 +90,7 @@
                 </Column>
             </DataTable> -->
         </div>
-    </div>
+
     <Dialog v-model:visible="visible" header="Document Verification"
         :style="{ width: '75vw', backgroundColor: '#ffffff' }" position="center" :modal="true" :draggable="false"
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
@@ -146,11 +141,13 @@
                                 <span class="text-sm "
                                     v-if="selectedDoc && selectedDoc.entry.name === item?.entry?.name"
                                     @click="getVersions(item.entry.id)"><i
-                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Versions : ${this.versionArray.length===0?"Show versions":""}`
+                                        class="pi pi-reply text-xs  transform scale-y-[-1]"></i> {{ `Versions :
+                                    ${this.versionArray.length === 0 ? "Show versions" : ""}`
                                     }}</span>
-                                    <span v-for="(data, index) in versionArray" :key="index" @click="getFileByVersion(data)">
-                                        {{ data }}
-                                    </span>
+                                <span v-for="(data, index) in versionArray" :key="index"
+                                    @click="getFileByVersion(data)">
+                                    {{ data }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -209,7 +206,7 @@ export default {
             tabvalue: 0,
             selectedProps: null,
             latestVersion: '',
-            versionArray:[],
+            versionArray: [],
             showVersion: false
 
 
@@ -497,7 +494,7 @@ export default {
         },
         async getFileByVersion(versionId) {
             console.log(versionId, "versionId")
-            const filterString=versionId.replace(',','');
+            const filterString = versionId.replace(',', '');
             console.log(filterString, "filterString")
             await httpClient.get(endpoints.getFileUsingVersion + `/${this.selectedDoc.entry?.id}/versions/${filterString}/content`, {
                 auth: {

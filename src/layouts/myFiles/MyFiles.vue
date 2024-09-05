@@ -33,10 +33,10 @@
             <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-3">
                     <div class="">
-                        <p class="text-lg font-medium text-slate-500">Version</p>
+                        <p class="text-lg font-medium text-slate-500">Versions</p>
                     </div>
                     <div class="flex flex-col">
-                        <span v-for="(data, index) in versionArray" :key="index">
+                        <span v-for="(data, index) in versionArray" :key="index" @click="getFileByVersion(data)" class="cursor-pointer">
                             {{ data }}
                         </span>
                         <!-- {{this.versionsList}} -->
@@ -75,12 +75,34 @@ export default {
             pdfUrl: null,
             visible: false,
             versionsList: '',
-            versionArray: []
+            versionArray: [],
+            docId:"",
 
         };
     },
     methods: {
+        async getFileByVersion(versionId) {
+            console.log(versionId, "versionId")
+            const filterString=versionId.replace(',','');
+            console.log(filterString, "filterString")
+            await httpClient.get(endpoints.getFileUsingVersion + `/${this.docId}/versions/${filterString}/content`, {
+                auth: {
+                    username: "admin",
+                    password: "admin"
+                },
+                responseType: 'blob'
+            }).then((res) => {
+                const binaryString = res?.data;
+                this.pdfUrl = window.URL.createObjectURL(binaryString);
+
+                const blob = new Blob([res.data], { type: res.headers['content-type'] });
+                const url = window.URL.createObjectURL(blob);
+                window.open(url);
+            })
+
+        },
         async changeModalVisibilty(documentId) {
+            this.docId=documentId
             const res = await httpClient.get(`${endpoints.versions}/${documentId}/versions`, {
                 auth: {
                     username: localStorage.getItem("userName"),

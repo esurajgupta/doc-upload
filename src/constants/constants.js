@@ -4,7 +4,7 @@ export const constant = {
     reviewId: "reviewTask",
     erpWorkflowTempPayload: {
         "createdBy": "Admin",
-        "event_key": "ta_docue_20005",
+        "event_key": "design_workflow_20005",
         "tenant_id": "102101",
         "business_key": "Alferso_test_API",
     },
