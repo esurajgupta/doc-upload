@@ -158,8 +158,11 @@
                 <div class="col-span-9 w-full" style="height: 75vh;">
                     <!-- <iframe :src="pdfUrl" style="width: 100%;height:100%;" sandbox="allow-same-origin"
                         referrerpolicy="no-referrer" /> -->
-                    <iframe v-if="pdfUrl" :src="pdfUrl" width="100%" height="100%" type="application/pdf"></iframe>
-                </div>
+                        <iframe v-if="pdfValidation" :src="pdfUrl" width="100%" height="100%"
+                        type="application/pdf"></iframe>
+                    <div v-else>
+                        No data Found.
+                    </div>                </div>
 
             </div>
         </div>
@@ -210,7 +213,8 @@ export default {
             selectedProps: null,
             latestVersion: '',
             versionArray:[],
-            showVersion: false
+            showVersion: false,
+            pdfValidation: false,
 
 
         };
@@ -479,6 +483,13 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
+                if (this.pdfUrl.type === 'application/pdf') {
+                    this.pdfValidation = true
+                    console.error('The file is valid PDF');
+                } else {
+                    this.pdfValidation = false
+                    console.error('The file is not a valid PDF');
+                }
             })
 
         },
@@ -493,6 +504,13 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
+                if (this.pdfUrl.type === 'application/pdf') {
+                    this.pdfValidation = true
+                    console.error('The file is valid PDF');
+                } else {
+                    this.pdfValidation = false
+                    console.error('The file is not a valid PDF');
+                }
             })
         },
         async getFileByVersion(versionId) {
@@ -508,6 +526,14 @@ export default {
             }).then((res) => {
                 const binaryString = res?.data;
                 this.pdfUrl = window.URL.createObjectURL(binaryString);
+                console.log(this.pdfUrl,"pdf values")
+                if (this.pdfUrl.type === 'application/pdf') {
+                    this.pdfValidation = true
+                    console.error('The file is valid PDF');
+                } else {
+                    this.pdfValidation = false
+                    console.error('The file is not a valid PDF');
+                }
 
                 const blob = new Blob([res.data], { type: res.headers['content-type'] });
                 const url = window.URL.createObjectURL(blob);
