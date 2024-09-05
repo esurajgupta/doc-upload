@@ -32,63 +32,12 @@
                 <Column field="instanceData.userName" header="Assignee"></Column>
                 <Column field="statusId" header="Status">
                     <template #body="slotProps">
-                        <div>{{ tabvalue === 0 ? getTaskNameById(slotProps.data?.instanceData?.statusId) : "Completed"
+                        <div>{{ tabvalue === 0 ? getTaskNameById(slotProps.data?.statusId) : "Completed"
                             }}
                         </div>
                     </template>
                 </Column>
-                <Column header="Action">
-                    <template #body="slotProps">
-                        <div class="h-full w-full flex justify-start items-center pl-4 gap-3">
-                            <span class="pi pi-cloud-upload" v-if="this.userRole === 'user'" @click=" this.$router.push({
-                                path: '/translanding/uploadDocument',
-                                state: { taskData: JSON.stringify(slotProps?.data) }
-                            })"></span>
-                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem"
-                                v-if="this.userRole === 'admin' && tabvalue === 0"
-                                @click="changeModalVisibilty(slotProps?.data)"></span>
-                            <span class="pi pi-eye text-primary" style="font-size: 1.3rem"
-                                v-if="this.userRole === 'admin' && tabvalue === 1"
-                                @click="changeModalVisibilty(slotProps?.data)"></span>
-                            <!-- <span class="pi pi-history" :class="[this.userRole === 'admin' ? 'text-primary' : '']"
-                                :style="[this.userRole === 'admin' ? 'font-size: 1.3rem' : '']" @click="this.$router.push({
-                                    path: '/translanding/Instance',
-                                    state: { prInsId: slotProps?.data.processInstanceId }
-                                })"></span> -->
-                        </div>
-                    </template>
-                </Column>
             </DataTable>
-            <!-- <DataTable v-if="tabvalue === 1" :value="erpTaskHistory" tableStyle="min-width: 50rem;min-height:10rem" paginator :rows="5"
-                :rowsPerPageOptions="[5, 10, 20, 50]">
-                <template #empty> No data found. </template>
-                <Column field="name" header="Workflow Name">
-                </Column>
-                <Column field="description" header="Description"></Column>
-                <Column field="created_date" header="Created Date">
-                    <template #body="slotProps">
-                        <div>{{ convertToReadableDate(slotProps.data.created_date) }}</div>
-                    </template>
-                </Column>
-                <Column field="assignee" header="Assignee"></Column>
-                <Column field="statusId" header="Status">
-                    <template #body="slotProps">
-                        <div>{{ getTaskNameById(slotProps.data.statusId) }}</div>
-                    </template>
-                </Column>
-                <Column header="Action">
-                    <template #body="slotProps">
-                        <div class="h-full w-full flex justify-start items-center pl-4">
-                            <span class="pi pi-cloud-upload" v-if="this.userRole === 'user'" @click=" this.$router.push({
-                                path: '/translanding/uploadDocument',
-                                state: { taskData: JSON.stringify(slotProps?.data) }
-                            })"></span>
-                            <span class="pi pi-file-edit text-primary" style="font-size: 1.3rem" v-if="this.userRole === 'admin'"
-                                @click="changeModalVisibilty(slotProps)"></span>
-                        </div>
-                    </template>
-                </Column>
-            </DataTable> -->
         </div>
 
     <Dialog v-model:visible="visible" header="Document Verification"
@@ -233,12 +182,6 @@ export default {
             })
             console.log(versionIds, "versionIds")
             this.versionArray = versionIds.join(',\n').split('\n');
-
-            // const maxNumber = Math.max(...versionIds)
-            // console.log(maxNumber, "maxNumber")
-            // this.latestVersion = maxNumber
-
-            // this.getFileByVersion(this.latestVersion)
         },
 
         async onClickTab(val) {
@@ -327,42 +270,6 @@ export default {
                 case 'Not yet started':
                     return null;
             }
-        },
-        async onClickReject() {
-
-            const taskPayload = {
-                task_id: "532391a6-baa7-4acb-b265-cc5cd8e1edc3",
-                internal_task_id: "node_68c79b9e-3cd4-4d4d-b258-051b976b50b6",
-                task_action: "approve",
-                tenant_id: "102101",
-                createdBy: "selva",
-                instance_data: {
-                    "email": "vignesh.saravanan@tekafforde.com",
-                    "qid": "123456789",
-                    "gender": "male",
-                    "age": "27",
-                    "spouse_qid": "212345678",
-                    "status": "pending",
-                    "witness1_qid": "312345678",
-                    "witness2_qid": "412345678"
-                }
-            }
-
-            await approveDocument(payload, (res) => {
-                this.visible = !this.visible;
-                if (res && res?.status && res.status === 200) {
-                    this.$toast.add({ severity: 'success', detail: "Task rejected successfully ", life: 3000 });
-                    httpClient.get("/api/v1/documentRejected/" + this.documents[0].split(",").pop() + `/${this.processId}`);
-                    this.getAlfrescoTask();
-
-
-                } else {
-                    this.$toast.add({ severity: 'error', detail: "error occured", life: 3000 });
-                }
-
-                console.log(res);
-
-            })
         },
         async onClickAccept(tabId) {
             let singleInstace = {};
