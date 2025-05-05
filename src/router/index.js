@@ -9,24 +9,29 @@ import MyFiles from '@/layouts/myFiles/MyFiles.vue'
 import ErpTaskList from '@/layouts/taskList/ErpTaskList.vue'
 import InstanceList from '@/layouts/instanceList/InstanceList.vue'
 import MyTasks from '@/layouts/myTasks/MyTasks.vue'
+import DeleteFileHistory from '@/layouts/DeleteHistory/DeleteFileHistory.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/translanding', component: Landing,
+      path: '/translanding',
+      component: Landing,
       children: [
         {
           path: 'createWorkflow',
           name: 'createWorkflow',
           component: TaskCreation,
           meta: {
-            breadcrumb: [{
-              label: "CreateWorkflow"
-            }, {
-              label: "Request",
-              route: "/translanding/createWorkflow"
-            }]
+            breadcrumb: [
+              {
+                label: 'CreateWorkflow'
+              },
+              {
+                label: 'Request',
+                route: '/translanding/createWorkflow'
+              }
+            ]
           }
         },
         {
@@ -34,38 +39,47 @@ const router = createRouter({
           name: 'uploadDocument',
           component: UploadDocs,
           meta: {
-            breadcrumb: [{
-              label: "UploadDocuement"
-            }, {
-              label: "Upload Document",
-              route: "/translanding/uploadDocument"
-            }]
+            breadcrumb: [
+              {
+                label: 'UploadDocuement'
+              },
+              {
+                label: 'Upload Document',
+                route: '/translanding/uploadDocument'
+              }
+            ]
           }
         },
-        // {
-        //   path: 'taskList',
-        //   name: 'taskList',
-        //   component: TaskList,
-        //   meta: {
-        //     breadcrumb: [{
-        //       label: "TaskList"
-        //     }, {
-        //       label: "Task List",
-        //       route: "/translanding/taskList"
-        //     }]
-        //   }
-        // },ErpTaskList
+        {
+          path: 'taskList',
+          name: 'taskList',
+          component: TaskList,
+          meta: {
+            breadcrumb: [
+              {
+                label: 'TaskList'
+              },
+              {
+                label: 'Task List',
+                route: '/translanding/taskList'
+              }
+            ]
+          }
+        }, //ErpTaskList
         {
           path: 'workflowlist',
           name: 'workflowlist',
           component: InstanceList,
           meta: {
-            breadcrumb: [{
-              label: "Workflow List"
-            }, {
-              label: "Running Instances",
-              route: "/translanding/workflowList"
-            }]
+            breadcrumb: [
+              {
+                label: 'Workflow List'
+              },
+              {
+                label: 'Running Instances',
+                route: '/translanding/workflowList'
+              }
+            ]
           }
         },
         {
@@ -73,25 +87,48 @@ const router = createRouter({
           name: 'myFiles',
           component: MyFiles,
           meta: {
-            breadcrumb: [{
-              label: "MyFiles"
-            }, {
-              label: "My Files",
-              route: "/translanding/myFiles"
-            }]
+            breadcrumb: [
+              {
+                label: 'MyFiles'
+              },
+              {
+                label: 'My Files',
+                route: '/translanding/myFiles'
+              }
+            ]
           }
         },
+        {
+          path: 'deleteFileHistory',
+          name: 'deleteFileHistory',
+          component: DeleteFileHistory,
+          meta: {
+            breadcrumb: [
+              {
+                label: 'DeleteFileHistory'
+              },
+              {
+                label: 'Delete File History',
+                route: '/translanding/deleteFileHistory'
+              }
+            ]
+          }
+        },
+
         {
           path: 'myTasks',
           name: 'myTasks',
           component: MyTasks,
           meta: {
-            breadcrumb: [{
-              label: "myTasks"
-            }, {
-              label: "My Tasks",
-              route: "/translanding/myTasks"
-            }]
+            breadcrumb: [
+              {
+                label: 'myTasks'
+              },
+              {
+                label: 'My Tasks',
+                route: '/translanding/myTasks'
+              }
+            ]
           }
         },
         {
@@ -99,15 +136,18 @@ const router = createRouter({
           name: 'Instance',
           component: InstanceList,
           meta: {
-            breadcrumb: [{
-              label: "Instance"
-            }, {
-              label: "Instance",
-              route: "/translanding/instance"
-            }]
+            breadcrumb: [
+              {
+                label: 'Instance'
+              },
+              {
+                label: 'Instance',
+                route: '/translanding/instance'
+              }
+            ]
           }
         },
-        { path: "", redirect: '/translanding/workflowList' }
+        { path: '', redirect: '/translanding/workflowList' }
       ]
     },
     {
@@ -115,7 +155,7 @@ const router = createRouter({
       name: 'login',
       component: () => import('../layouts/login/Login.vue')
     },
-    { path: "", redirect: "/login" }
+    { path: '', redirect: '/login' }
   ]
 })
 

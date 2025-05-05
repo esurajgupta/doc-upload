@@ -23,6 +23,9 @@
         </div>
     </div>
     <Toast />
+    <div v-if="isLoading" class="loader-overlay">
+        <div class="loader"></div>
+    </div>
 </template>
 
 <script>
@@ -47,9 +50,10 @@ export default {
         return {
             docList: ref([]),
             taskId: window.history.state.taskId,
-            taskData: JSON.parse(window.history.state.taskData),
+            taskData: {},
             userToken: "",
-            searchParams: new URLSearchParams(window.location.search)
+            searchParams: new URLSearchParams(window.location.search),
+            isLoading: false // Add loader state
         }
     },
     methods: {
@@ -78,6 +82,7 @@ export default {
             })
         },
         async onClickUpload() {
+            this.isLoading = true; // Show loader
             console.log(this.taskData, "onclickupload");
             await getTaskForInstance(this.taskData?.processInstanceId, (res) => {
                 console.log(res, "snle dada");
@@ -93,54 +98,17 @@ export default {
             }, payload, (res) => {
                 if (res && res?.status && res.status !== 201) {
                     this.$toast.add({ severity: 'error', detail: "error occured", life: 3000 });
-                    return
+                    this.isLoading = false; // Hide loader on error
+                    return;
                 }
                 this.$toast.add({ severity: 'success', detail: 'Uploaded Successfully', life: 3000 });
-                // httpClient.get("/api/v1/documentUploaded/" + localStorage.getItem("userName"));
                 this.startProcess(res?.data);
+                setTimeout(() => {
+                    this.isLoading = false; // Hide loader after success
+                    router.push("/translanding/myFiles"); // Navigate to myFiles
+                }, 1000);
             });
         },
-        // async startProcess(docDetails) {
-        //     const payload = {
-        //         "processDefinitionKey": "activitiReview",
-        //         "variables":
-        //         {
-        //             "bpm_assignee": "admin"
-        //         }
-        //     };
-        //     await createNewProcess(payload, async (res) => {
-        //         if (JSON.stringify(res).includes("AxiosError")) {
-        //             this.$toast.add({ severity: 'danger', detail: 'Error occurred while initiating workflow', life: 3000 });
-        //         } else {
-        //             httpClient.get("/api/v1/workFlowInitiate/" + `${localStorage.getItem("userName")}/${this.taskId}/${res?.entry?.id}`)
-        //             const tempPayload = {
-        //                 taskId: res?.entry?.id,
-        //                 id: `workspace://SpacesStore/${docDetails?.entry?.id}`
-        //             }
-        //             await assignDocToProcess(tempPayload, (res) => {
-        //                 if (JSON.stringify(res).includes("AxiosError")) {
-        //                     this.$toast.add({ severity: 'danger', detail: 'Error occurred while adding document', life: 3000 });
-        //                 } else {
-        //                     this.$toast.add({ severity: 'success', detail: 'Workflow updated successfully', life: 3000 });
-        //                 }
-        //             })
-        //             const docsInfoPayload = {
-        //                 "taskId": parseInt(this.taskId),
-        //                 "alferscoId": parseInt(res?.entry?.id),
-        //                 userName: localStorage.getItem("userName"),
-        //                 "documents": [
-        //                     {
-        //                         "uplodedDocumentId": docDetails?.entry?.id,
-        //                         "documentName": docDetails?.entry?.name
-        //                     },
-        //                 ]
-        //             };
-        //             await uploadDocsInfoToDB(docsInfoPayload, (res) => {
-        //                 setTimeout(() => router.push("/translanding/workflowList"), 1000);
-        //             });
-        //         }
-        //     });
-        // }
         async startProcess(docDetails) {
             let singleInstace = null;
             await getTaskForInstance(this.taskData?.processInstanceId, (res) => {
@@ -219,5 +187,32 @@ export default {
 
 .custom-border {
     border: 1px solid #b1d1f6;
+}
+
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 </style>
