@@ -29,7 +29,7 @@ export default defineConfig({
       //   pathReWrite: { '^/alfresco': '/alfresco' }
       // }
       '^/alfresco/': {
-        target: 'https://acs.apps.ocp4.vismaya.com',
+        target: 'http://acs-alfresco-repository.alfresco.svc.cluster.local',
         pathReWrite: { '^/alfresco': '/alfresco' }
       }
     }
