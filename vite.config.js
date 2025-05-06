@@ -6,10 +6,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueJsx(),
-  ],
+  plugins: [vue(), vueJsx()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -17,21 +14,22 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "^/api/v1/": {
-        target: "http://localhost:8087",
+      '^/api/v1/': {
+        target: 'http://localhost:8087',
         pathReWrite: { '^/api/v1': '/api/v1' }
       },
-      // "^/api/": {
-      //   target: "http://localhost:3000",
-      //   pathReWrite: { '/api': '/api' },
-      // },
+
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, '')
       },
-      "^/alfresco/": {
-        target: "http://localhost:8081",
+      // "^/alfresco/": {
+      //   target: "http://localhost:8081",
+      //   pathReWrite: { '^/alfresco': '/alfresco' }
+      // }
+      '^/alfresco/': {
+        target: 'https://acs.apps.ocp4.vismaya.com',
         pathReWrite: { '^/alfresco': '/alfresco' }
       }
     }

@@ -73,10 +73,8 @@ export default {
       console.log('Restore file id:', id)
       this.isLoading = true // Start loader
       try {
-        var payload = {}
         const response = await httpClient.post(
-          `${endpoints.restoreDocument}` + `/${id}` + '/restore',
-          payload,
+          `${endpoints.restoreDocument}` + `/${id}` + '/restore',null,
           {
             auth: {
               username: localStorage.getItem('userName'),
@@ -89,7 +87,7 @@ export default {
       } catch (error) {
         console.error('Error restoring file:', error)
       } finally {
-        this.isLoading = false // Stop loader
+        this.isLoading = false 
       }
     }
   },
